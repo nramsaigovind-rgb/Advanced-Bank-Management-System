@@ -80,6 +80,9 @@ The login screen features **1-Click Quick Demo Persona Buttons** to test any rol
 Run the full integration test suite across MySQL, MongoDB, Redis, and FastAPI:
 
 ```powershell
+py -m venv backend\venv
+.\backend\venv\Scripts\Activate.ps1
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 .\backend\venv\Scripts\pytest.exe backend\tests -v
 ```
 
