@@ -326,6 +326,22 @@ CREATE TABLE fraud_alerts (
     CONSTRAINT chk_fa_score CHECK (risk_score BETWEEN 0 AND 100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 14. NOTIFICATIONS (Customer and Staff Event Alerts)
+DROP TABLE IF EXISTS notifications;
+CREATE TABLE notifications (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    type ENUM('TRANSFER_RECEIVED', 'TRANSFER_SENT', 'LOAN_APPROVED', 'LOAN_DISBURSED', 'FRAUD_ALERT', 'SYSTEM') NOT NULL DEFAULT 'SYSTEM',
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    link VARCHAR(255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notif_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_notif_user_created (user_id, created_at DESC),
+    INDEX idx_notif_user_unread (user_id, is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =========================================================================

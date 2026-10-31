@@ -53,7 +53,7 @@ The **Advanced Bank Management System (ABMS)** is an enterprise-grade banking pl
 #### A. Starting the FastAPI Backend Server
 ```powershell
 # Navigate to project root
-cd "c:\Users\nrams\Downloads\advanced bank management system\Advanced-Bank-Management-System"
+cd /path/to/Advanced-Bank-Management-System
 
 # Run with virtual environment
 .\backend\venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
@@ -63,7 +63,7 @@ cd "c:\Users\nrams\Downloads\advanced bank management system\Advanced-Bank-Manag
 #### B. Starting the Next.js Frontend
 ```powershell
 # In a new terminal window:
-cd "c:\Users\nrams\Downloads\advanced bank management system\Advanced-Bank-Management-System\frontend"
+cd frontend
 
 # Launch dev server (or 'npm start' for production)
 npm run dev

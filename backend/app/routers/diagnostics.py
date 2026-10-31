@@ -239,3 +239,71 @@ def verify_audit_log_cryptographic_integrity(
         "records": verified_logs
     }
 
+@router.post("/rate-limit-demo")
+def demo_rate_limit(
+    burst_count: int = Query(6, ge=1, le=20),
+    current_user: User = Depends(require_roles("admin"))
+):
+    """
+    Demonstrates Redis atomic rate limiting in action for the admin lab.
+    Fires a simulated burst against an isolated demo key with limit=5/min.
+    Illustrates HTTP 200 for requests 1-5 and HTTP 429 for request 6+.
+    """
+    from backend.app.core.rate_limiter import check_rate_limit
+    demo_key = f"rate:demo:admin_lab_{int(time.time() * 1000)}"
+    limit = 5
+    results = []
+
+    for i in range(1, burst_count + 1):
+        allowed, retry_after = check_rate_limit(demo_key, limit=limit, window_seconds=60)
+        results.append({
+            "attempt": i,
+            "status_code": 200 if allowed else 429,
+            "allowed": allowed,
+            "retry_after": retry_after if not allowed else 0,
+            "action": "ALLOWED" if allowed else "BLOCKED_RATE_LIMIT"
+        })
+
+    return {
+        "status": "success",
+        "demo": "Redis In-Memory Rate Limiting Engine",
+        "limit_per_minute": limit,
+        "burst_count": burst_count,
+        "rate_limit_triggered": any(not r["allowed"] for r in results),
+        "results": results
+    }
+
+# ---------------- Scheduled Jobs Diagnostics ----------------
+
+@router.post("/jobs/interest-credit")
+def trigger_interest_credit_job(
+    current_user: User = Depends(require_roles("admin")),
+    db: Session = Depends(get_db)
+):
+    """Admin manual trigger: Computes and credits 4% monthly savings interest via double-entry ledger."""
+    from backend.app.services.scheduler import execute_interest_credit_job
+    result = execute_interest_credit_job(db)
+    return {"status": "SUCCESS", "job": "interest-credit", "result": result}
+
+@router.post("/jobs/mark-overdue")
+def trigger_mark_overdue_job(
+    current_user: User = Depends(require_roles("admin")),
+    db: Session = Depends(get_db)
+):
+    """Admin manual trigger: Scans and flags overdue loan installments."""
+    from backend.app.services.scheduler import execute_mark_overdue_job
+    result = execute_mark_overdue_job(db)
+    return {"status": "SUCCESS", "job": "mark-overdue", "result": result}
+
+@router.post("/jobs/mark-dormant")
+def trigger_mark_dormant_job(
+    current_user: User = Depends(require_roles("admin")),
+    db: Session = Depends(get_db)
+):
+    """Admin manual trigger: Flags customer accounts with no activity in 180 days as DORMANT."""
+    from backend.app.services.scheduler import execute_mark_dormant_job
+    result = execute_mark_dormant_job(db)
+    return {"status": "SUCCESS", "job": "mark-dormant", "result": result}
+
+
+

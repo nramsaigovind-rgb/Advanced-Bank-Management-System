@@ -6,8 +6,9 @@ from sqlalchemy import or_
 from backend.app.core.database import get_db
 from backend.app.core.auth import get_current_user, require_roles, record_audit_event
 from backend.app.core.security import get_password_hash
-from backend.app.models import Customer, User, Role, Branch
+from backend.app.models import Customer, User, Role, Branch, Beneficiary
 from backend.app.schemas.customer import CustomerCreate, CustomerUpdate, CustomerOut, KYCVerifyRequest
+from backend.app.schemas.account import BeneficiaryCreate, BeneficiaryOut
 
 router = APIRouter(prefix="/api/customers", tags=["Customers"])
 
@@ -54,6 +55,86 @@ def get_my_customer_profile(
     if not current_user.customer_profile:
         raise HTTPException(status_code=404, detail="Customer profile not found")
     return current_user.customer_profile
+
+# ---------------- Beneficiary Management (Declared before /{id}) ----------------
+
+@router.get("/beneficiaries", response_model=List[BeneficiaryOut])
+def list_my_beneficiaries(
+    current_user: User = Depends(require_roles("customer")),
+    db: Session = Depends(get_db)
+):
+    if not current_user.customer_profile:
+        return []
+    return db.query(Beneficiary).filter(Beneficiary.customer_id == current_user.customer_profile.id).all()
+
+@router.post("/beneficiaries", response_model=BeneficiaryOut, status_code=status.HTTP_201_CREATED)
+def create_customer_beneficiary(
+    req: BeneficiaryCreate,
+    request: Request,
+    current_user: User = Depends(require_roles("customer")),
+    db: Session = Depends(get_db)
+):
+    if not current_user.customer_profile:
+        raise HTTPException(status_code=404, detail="Customer profile missing")
+
+    cust_id = current_user.customer_profile.id
+    existing = db.query(Beneficiary).filter_by(customer_id=cust_id, account_number=req.account_number).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Beneficiary already saved")
+
+    ben = Beneficiary(
+        customer_id=cust_id,
+        beneficiary_name=req.beneficiary_name,
+        account_number=req.account_number,
+        ifsc_code=req.ifsc_code,
+        bank_name=req.bank_name,
+        daily_limit=req.daily_limit,
+        is_verified=True
+    )
+    db.add(ben)
+    db.flush()
+
+    record_audit_event(
+        db=db,
+        user=current_user,
+        action="BENEFICIARY_ADDED",
+        entity_type="Beneficiary",
+        entity_id=str(ben.id),
+        payload={"name": req.beneficiary_name, "account": req.account_number},
+        request=request
+    )
+    db.commit()
+    db.refresh(ben)
+    return ben
+
+@router.delete("/beneficiaries/{id}")
+def delete_customer_beneficiary(
+    id: int,
+    request: Request,
+    current_user: User = Depends(require_roles("customer")),
+    db: Session = Depends(get_db)
+):
+    if not current_user.customer_profile:
+        raise HTTPException(status_code=404, detail="Customer profile missing")
+
+    ben = db.query(Beneficiary).filter_by(id=id, customer_id=current_user.customer_profile.id).first()
+    if not ben:
+        raise HTTPException(status_code=404, detail="Beneficiary not found")
+
+    db.delete(ben)
+    record_audit_event(
+        db=db,
+        user=current_user,
+        action="BENEFICIARY_DELETED",
+        entity_type="Beneficiary",
+        entity_id=str(id),
+        payload={"account": ben.account_number},
+        request=request
+    )
+    db.commit()
+    return {"message": "Beneficiary removed successfully"}
+
+
 
 @router.get("/{id}", response_model=CustomerOut)
 def get_customer_by_id(
@@ -140,6 +221,7 @@ def register_customer(
     db.refresh(customer)
     return customer
 
+
 @router.patch("/{id}/kyc", response_model=CustomerOut)
 def verify_kyc(
     id: int,
@@ -169,4 +251,10 @@ def verify_kyc(
     db.commit()
     db.refresh(customer)
     return customer
+
+
+
+
+
+
 

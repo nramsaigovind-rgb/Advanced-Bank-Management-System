@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200" style="background:#0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#134e4a"/>
+      <stop offset="100%" stop-color="#06231c"/>
+    </linearGradient>
+    <linearGradient id="tableHead" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title Banner -->
+  <rect x="40" y="30" width="1520" height="70" rx="12" fill="url(#headerGrad)" stroke="#10b981" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="70" y="72" fill="#ffffff" font-size="22" font-weight="bold" letter-spacing="1">ABMS BANK &bull; ENTERPRISE RELATIONAL DATABASE ENTITY-RELATIONSHIP DIAGRAM</text>
+  <text x="1250" y="72" fill="#34d399" font-size="13" font-family="monospace">MySQL 8.0 (InnoDB) &bull; 3NF Compliant</text>
+
+  <!-- Grid Layout of Entities -->
+
+  <!-- 1. ROLES -->
+  <g transform="translate(60, 130)" filter="url(#shadow)">
+    <rect width="260" height="140" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="260" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">roles</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>name : VARCHAR(50)</text>
+    <text x="12" y="95" fill="#94a3b8" font-size="11">display_name : VARCHAR(100)</text>
+    <text x="12" y="115" fill="#94a3b8" font-size="11">description : TEXT</text>
+  </g>
+
+  <!-- 2. USERS -->
+  <g transform="translate(360, 130)" filter="url(#shadow)">
+    <rect width="280" height="210" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">users</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>role_id : BIGINT &rarr; roles.id</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>username : VARCHAR(50)</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>email : VARCHAR(100)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">password_hash : VARCHAR(255)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">is_active : BOOLEAN</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">failed_login_attempts : INT</text>
+    <text x="12" y="195" fill="#94a3b8" font-size="11">last_login : DATETIME</text>
+  </g>
+
+  <!-- 3. BRANCHES -->
+  <g transform="translate(680, 130)" filter="url(#shadow)">
+    <rect width="280" height="200" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">branches</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>branch_code : VARCHAR(20)</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>ifsc_code : VARCHAR(20)</text>
+    <text x="12" y="115" fill="#94a3b8" font-size="11">name : VARCHAR(100)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">city : VARCHAR(50)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">state : VARCHAR(50)</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">is_active : BOOLEAN</text>
+  </g>
+
+  <!-- 4. EMPLOYEES -->
+  <g transform="translate(1000, 130)" filter="url(#shadow)">
+    <rect width="280" height="200" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">employees</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>user_id : BIGINT &rarr; users.id</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>branch_id : BIGINT &rarr; branches.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>employee_code : VARCHAR(20)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">designation : VARCHAR(100)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">department : VARCHAR(50)</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">hire_date : DATE</text>
+  </g>
+
+  <!-- 5. CUSTOMERS -->
+  <g transform="translate(60, 390)" filter="url(#shadow)">
+    <rect width="280" height="240" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">customers</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>user_id : BIGINT &rarr; users.id</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>branch_id : BIGINT &rarr; branches.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>customer_number : VARCHAR(30)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">first_name : VARCHAR(50)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">last_name : VARCHAR(50)</text>
+    <text x="12" y="175" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>pan_number : VARCHAR(20)</text>
+    <text x="12" y="195" fill="#94a3b8" font-size="11">kyc_status : ENUM(PENDING, VERIFIED...)</text>
+    <text x="12" y="215" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>verified_by : BIGINT &rarr; employees.id</text>
+  </g>
+
+  <!-- 6. ACCOUNTS -->
+  <g transform="translate(380, 390)" filter="url(#shadow)">
+    <rect width="280" height="230" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+    <rect width="280" height="32" rx="8" fill="url(#headerGrad)"/>
+    <text x="12" y="22" fill="#34d399" font-size="13" font-weight="bold">accounts (Core Financial)</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>account_number : VARCHAR(30)</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>customer_id : BIGINT &rarr; customers.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>branch_id : BIGINT &rarr; branches.id</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">account_type : ENUM(SAVINGS, CHECKING...)</text>
+    <text x="12" y="155" fill="#34d399" font-size="11" font-weight="bold">balance : DECIMAL(18,4) [CHK >= 0]</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">currency : VARCHAR(3)</text>
+    <text x="12" y="195" fill="#94a3b8" font-size="11">status : ENUM(ACTIVE, FROZEN...)</text>
+    <text x="12" y="215" fill="#94a3b8" font-size="11">version : INT (OCC Optimistic Lock)</text>
+  </g>
+
+  <!-- 7. TRANSACTIONS -->
+  <g transform="translate(700, 390)" filter="url(#shadow)">
+    <rect width="290" height="230" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+    <rect width="290" height="32" rx="8" fill="url(#headerGrad)"/>
+    <text x="12" y="22" fill="#34d399" font-size="13" font-weight="bold">transactions (Double-Entry Header)</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>reference_no : VARCHAR(64)</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>idempotency_key : VARCHAR(128)</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>source_account_id : BIGINT &rarr; accounts.id</text>
+    <text x="12" y="135" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>destination_account_id : BIGINT &rarr; accounts.id</text>
+    <text x="12" y="155" fill="#34d399" font-size="11" font-weight="bold">amount : DECIMAL(18,4) [CHK > 0]</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">transaction_type : ENUM(TRANSFER...)</text>
+    <text x="12" y="195" fill="#94a3b8" font-size="11">status : ENUM(PENDING, COMPLETED...)</text>
+    <text x="12" y="215" fill="#94a3b8" font-size="11">created_at : DATETIME</text>
+  </g>
+
+  <!-- 8. LEDGER ENTRIES -->
+  <g transform="translate(1030, 390)" filter="url(#shadow)">
+    <rect width="290" height="190" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+    <rect width="290" height="32" rx="8" fill="url(#headerGrad)"/>
+    <text x="12" y="22" fill="#34d399" font-size="13" font-weight="bold">ledger_entries (Immutable Lines)</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>transaction_id : BIGINT &rarr; tx.id</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>account_id : BIGINT &rarr; accounts.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11">entry_type : ENUM('DEBIT', 'CREDIT')</text>
+    <text x="12" y="135" fill="#34d399" font-size="11" font-weight="bold">amount : DECIMAL(18,4) [CHK > 0]</text>
+    <text x="12" y="155" fill="#34d399" font-size="11" font-weight="bold">balance_after : DECIMAL(18,4)</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">posted_at : DATETIME</text>
+  </g>
+
+  <!-- 9. CARDS -->
+  <g transform="translate(60, 680)" filter="url(#shadow)">
+    <rect width="280" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">cards</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>account_id : BIGINT &rarr; accounts.id</text>
+    <text x="12" y="95" fill="#94a3b8" font-size="11">card_number_masked : VARCHAR(25)</text>
+    <text x="12" y="115" fill="#10b981" font-size="11">card_number_hash : VARCHAR(64)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">daily_atm_limit : DECIMAL(18,4)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">is_blocked : BOOLEAN</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">expiry_year : INT</text>
+  </g>
+
+  <!-- 10. BENEFICIARIES -->
+  <g transform="translate(380, 680)" filter="url(#shadow)">
+    <rect width="280" height="170" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">beneficiaries</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>customer_id : BIGINT &rarr; customers.id</text>
+    <text x="12" y="95" fill="#94a3b8" font-size="11">beneficiary_name : VARCHAR(100)</text>
+    <text x="12" y="115" fill="#94a3b8" font-size="11">account_number : VARCHAR(30)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">daily_limit : DECIMAL(18,4)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">is_verified : BOOLEAN</text>
+  </g>
+
+  <!-- 11. LOANS -->
+  <g transform="translate(700, 680)" filter="url(#shadow)">
+    <rect width="290" height="230" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="290" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">loans</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>loan_number : VARCHAR(30)</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>customer_id : BIGINT &rarr; customers.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>branch_id : BIGINT &rarr; branches.id</text>
+    <text x="12" y="135" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>disbursement_acc_id : BIGINT &rarr; accounts.id</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">principal_amount : DECIMAL(18,4)</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">annual_interest_rate : DECIMAL(5,2)</text>
+    <text x="12" y="195" fill="#94a3b8" font-size="11">monthly_emi : DECIMAL(18,4)</text>
+    <text x="12" y="215" fill="#94a3b8" font-size="11">status : ENUM(APPLIED, DISBURSED...)</text>
+  </g>
+
+  <!-- 12. LOAN INSTALLMENTS -->
+  <g transform="translate(1030, 680)" filter="url(#shadow)">
+    <rect width="290" height="210" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="290" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">loan_installments</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>loan_id : BIGINT &rarr; loans.id</text>
+    <text x="12" y="95" fill="#94a3b8" font-size="11">installment_number : INT</text>
+    <text x="12" y="115" fill="#94a3b8" font-size="11">due_date : DATE</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">principal_component : DECIMAL(18,4)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">interest_component : DECIMAL(18,4)</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">total_amount : DECIMAL(18,4)</text>
+    <text x="12" y="195" fill="#94a3b8" font-size="11">status : ENUM(PENDING, PAID, OVERDUE)</text>
+  </g>
+
+  <!-- 13. LOAN PAYMENTS -->
+  <g transform="translate(1030, 930)" filter="url(#shadow)">
+    <rect width="290" height="170" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="290" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">loan_payments</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>loan_id : BIGINT &rarr; loans.id</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>installment_id : BIGINT &rarr; installments.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>transaction_id : BIGINT &rarr; tx.id</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">amount_paid : DECIMAL(18,4)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">payment_date : DATETIME</text>
+  </g>
+
+  <!-- 14. FRAUD ALERTS -->
+  <g transform="translate(60, 930)" filter="url(#shadow)">
+    <rect width="280" height="200" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="#7f1d1d"/>
+    <text x="12" y="22" fill="#fca5a5" font-size="13" font-weight="bold">fraud_alerts (Surveillance)</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>alert_code : VARCHAR(40)</text>
+    <text x="12" y="95" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>account_id : BIGINT &rarr; accounts.id</text>
+    <text x="12" y="115" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>customer_id : BIGINT &rarr; customers.id</text>
+    <text x="12" y="135" fill="#f8fafc" font-size="11">risk_score : INT [CHK 0-100]</text>
+    <text x="12" y="155" fill="#ef4444" font-size="11" font-weight="bold">severity : ENUM(LOW, HIGH, CRITICAL)</text>
+    <text x="12" y="175" fill="#94a3b8" font-size="11">status : ENUM(NEW, UNDER_INVESTIGATION...)</text>
+    <text x="12" y="195" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>investigated_by : BIGINT &rarr; emp.id</text>
+  </g>
+
+  <!-- 15. NOTIFICATIONS -->
+  <g transform="translate(380, 930)" filter="url(#shadow)">
+    <rect width="280" height="170" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="280" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">notifications</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#38bdf8">FK </tspan>user_id : BIGINT &rarr; users.id</text>
+    <text x="12" y="95" fill="#94a3b8" font-size="11">title : VARCHAR(150)</text>
+    <text x="12" y="115" fill="#94a3b8" font-size="11">type : ENUM(TRANSFER_RECEIVED...)</text>
+    <text x="12" y="135" fill="#94a3b8" font-size="11">is_read : BOOLEAN</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">created_at : DATETIME</text>
+  </g>
+
+  <!-- 16. OUTBOX EVENTS -->
+  <g transform="translate(700, 930)" filter="url(#shadow)">
+    <rect width="290" height="170" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <rect width="290" height="32" rx="8" fill="url(#tableHead)"/>
+    <text x="12" y="22" fill="#38bdf8" font-size="13" font-weight="bold">outbox_events (Transactional Outbox)</text>
+    <text x="12" y="55" fill="#f8fafc" font-size="11"><tspan fill="#f59e0b" font-weight="bold">PK </tspan>id : BIGINT (AI)</text>
+    <text x="12" y="75" fill="#f8fafc" font-size="11"><tspan fill="#10b981">UQ </tspan>event_id : VARCHAR(64)</text>
+    <text x="12" y="95" fill="#94a3b8" font-size="11">event_type : VARCHAR(100)</text>
+    <text x="12" y="115" fill="#94a3b8" font-size="11">payload : JSON</text>
+    <text x="12" y="135" fill="#f8fafc" font-size="11">status : ENUM(PENDING, PROCESSED...)</text>
+    <text x="12" y="155" fill="#94a3b8" font-size="11">retry_count : INT</text>
+  </g>
+
+  <!-- Key Legend -->
+  <g transform="translate(60, 1150)">
+    <rect width="15" height="15" fill="#f59e0b" rx="3"/>
+    <text x="25" y="12" fill="#f8fafc" font-size="12" font-weight="bold">PK: Primary Key</text>
+    <rect x="170" width="15" height="15" fill="#38bdf8" rx="3"/>
+    <text x="195" y="12" fill="#f8fafc" font-size="12" font-weight="bold">FK: Foreign Key</text>
+    <rect x="340" width="15" height="15" fill="#10b981" rx="3"/>
+    <text x="365" y="12" fill="#f8fafc" font-size="12" font-weight="bold">UQ: Unique Constraint</text>
+    <circle cx="530" cy="8" r="6" fill="#34d399"/>
+    <text x="545" y="12" fill="#34d399" font-size="12" font-weight="bold">Double-Entry Financial Balancing Engine [Sum(Debit) = Sum(Credit)]</text>
+  </g>
+</svg>

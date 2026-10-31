@@ -54,4 +54,5 @@ class User(Base):
     employee_profile: Mapped[Optional["Employee"]] = relationship("Employee", back_populates="user", uselist=False)
     customer_profile: Mapped[Optional["Customer"]] = relationship("Customer", back_populates="user", uselist=False)
     audit_logs: Mapped[List["AuditLog"]] = relationship("AuditLog", back_populates="user")
+    notifications: Mapped[List["Notification"]] = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
 

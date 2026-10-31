@@ -11,6 +11,7 @@ export interface UserProfile {
   role: string;
   first_name?: string;
   last_name?: string;
+  display_name?: string;
   customer_id?: number;
   employee_id?: number;
   branch_id?: number;

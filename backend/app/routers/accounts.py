@@ -1,12 +1,15 @@
 import uuid
 import hashlib
+from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, Query
 from sqlalchemy.orm import Session
 from backend.app.core.database import get_db
 from backend.app.core.auth import get_current_user, require_roles, record_audit_event
 from backend.app.models import Account, Customer, Branch, Card, Beneficiary, User
+from backend.app.models.transaction import LedgerEntry
+from backend.app.services.statement_service import generate_csv_statement, generate_pdf_statement
 from backend.app.schemas.account import (
     AccountCreate, AccountStatusUpdate, AccountOut,
     CardOut, CardStatusUpdate, BeneficiaryCreate, BeneficiaryOut
@@ -53,6 +56,66 @@ def get_account_by_id(
             raise HTTPException(status_code=403, detail="Forbidden: You cannot access other customers' accounts")
 
     return account
+
+@router.get("/{id}/statement")
+def export_account_statement(
+    id: int,
+    from_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
+    to_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
+    format: str = Query("pdf", pattern="^(pdf|csv)$"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    account = db.query(Account).filter(Account.id == id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    if current_user.role.name == "customer":
+        if not current_user.customer_profile or account.customer_id != current_user.customer_profile.id:
+            raise HTTPException(status_code=403, detail="Forbidden: You cannot access other customers' statements")
+
+    f_dt = None
+    t_dt = None
+    query = db.query(LedgerEntry).filter(LedgerEntry.account_id == account.id)
+
+    if from_date:
+        try:
+            f_dt = datetime.strptime(from_date, "%Y-%m-%d")
+            query = query.filter(LedgerEntry.posted_at >= f_dt)
+        except Exception:
+            pass
+
+    if to_date:
+        try:
+            t_dt = datetime.strptime(to_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+            query = query.filter(LedgerEntry.posted_at <= t_dt)
+        except Exception:
+            pass
+
+    entries = query.order_by(LedgerEntry.posted_at.asc()).all()
+    customer = account.customer
+
+    if format.lower() == "csv":
+        csv_data = generate_csv_statement(account=account, customer=customer, entries=entries)
+        return Response(
+            content=csv_data,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=statement_{account.account_number}.csv"}
+        )
+    else:
+        pdf_bytes = generate_pdf_statement(
+            account=account,
+            customer=customer,
+            entries=entries,
+            from_date=f_dt,
+            to_date=t_dt
+        )
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=statement_{account.account_number}.pdf"}
+        )
+
 
 @router.post("", response_model=AccountOut, status_code=status.HTTP_201_CREATED)
 def create_account(

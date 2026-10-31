@@ -18,7 +18,8 @@ class TransferService:
         description: str,
         idempotency_key: str = None,
         simulate_failure_before_commit: bool = False,
-        user: User = None
+        user: User = None,
+        record_audit: bool = True
     ) -> Tuple[Transaction, float]:
         """
         Executes a financial transfer with pessimistic row-level locking (SELECT ... FOR UPDATE)
@@ -139,24 +140,55 @@ class TransferService:
             db.add(outbox)
 
             # Record Relational Audit Log
-            record_audit_event(
-                db=db,
-                user=user,
-                action="FINANCIAL_TRANSFER",
-                entity_type="Transaction",
-                entity_id=str(tx.id),
-                payload={
-                    "ref": tx.reference_no,
-                    "from": source.account_number,
-                    "to": destination.account_number,
-                    "amount": float(amount)
-                }
-            )
+            if record_audit:
+                record_audit_event(
+                    db=db,
+                    user=user,
+                    action="FINANCIAL_TRANSFER",
+                    entity_type="Transaction",
+                    entity_id=str(tx.id),
+                    payload={
+                        "ref": tx.reference_no,
+                        "from": source.account_number,
+                        "to": destination.account_number,
+                        "amount": float(amount)
+                    }
+                )
+
+            # Customer Notifications
+            try:
+                from backend.app.services.notification_service import send_notification
+                if source.customer and source.customer.user_id:
+                    send_notification(
+                        db=db,
+                        user_id=source.customer.user_id,
+                        title="Transfer Sent",
+                        message=f"₹{amount:,.2f} transferred to {destination.account_number}. Ref: {tx.reference_no}",
+                        notification_type="TRANSFER_SENT"
+                    )
+                if destination.customer and destination.customer.user_id:
+                    send_notification(
+                        db=db,
+                        user_id=destination.customer.user_id,
+                        title="Money Received",
+                        message=f"₹{amount:,.2f} received from {source.account_number}. Ref: {tx.reference_no}",
+                        notification_type="TRANSFER_RECEIVED"
+                    )
+            except Exception:
+                pass
 
             # Commit the entire atomic unit of work
             db.commit()
             db.refresh(tx)
             db.refresh(source)
+
+            # Evaluate fraud rules post-commit (never blocks transfer)
+            try:
+                from backend.app.services.fraud_detector import run_post_transfer_fraud_checks
+                run_post_transfer_fraud_checks(db=db, tx=tx)
+            except Exception as f_err:
+                # Fraud check evaluation should never crash the transfer response
+                pass
 
             elapsed_ms = (time.perf_counter() - start_time) * 1000
             return tx, elapsed_ms

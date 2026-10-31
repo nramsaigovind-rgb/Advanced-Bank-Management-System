@@ -7,6 +7,7 @@ from backend.app.models.account import Account, Card, Beneficiary
 from backend.app.models.transaction import Transaction, LedgerEntry, OutboxEvent
 from backend.app.models.loan import Loan, LoanInstallment, LoanPayment
 from backend.app.models.audit import AuditLog, FraudAlert
+from backend.app.models.notification import Notification
 
 __all__ = [
     "Base",
@@ -27,6 +28,7 @@ __all__ = [
     "LoanInstallment",
     "LoanPayment",
     "AuditLog",
-    "FraudAlert"
+    "FraudAlert",
+    "Notification"
 ]
 

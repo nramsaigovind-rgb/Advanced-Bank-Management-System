@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     # Banking controls
     DEMO_FAULT_INJECTION_ENABLED: bool = True
     LOCK_TIMEOUT_SECONDS: int = 10
+    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     model_config = SettingsConfigDict(
         env_file=".env",

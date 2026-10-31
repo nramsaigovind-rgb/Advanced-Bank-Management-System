@@ -22,6 +22,7 @@ import {
   Plus,
 } from 'lucide-react';
 import Link from 'next/link';
+import { SpendingDonutChart, BalanceTrendLine } from '@/components/AnalyticsWidgets';
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
@@ -159,6 +160,12 @@ export default function CustomerDashboard() {
               accentColor="teal"
             />
           </div>
+        </div>
+
+        {/* Analytics Widgets: Donut + 30-Day Trajectory */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SpendingDonutChart />
+          <BalanceTrendLine currentBalance={totalBalance || primaryAccount.balance} />
         </div>
 
         {/* Middle Section: Cards & Loan Overview */}

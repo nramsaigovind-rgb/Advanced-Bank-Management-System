@@ -15,6 +15,7 @@ import {
   AlertCircle,
   HelpCircle,
   IndianRupee,
+  Printer,
 } from 'lucide-react';
 
 interface TransferModalProps {
@@ -135,12 +136,22 @@ export default function TransferModal({
               </div>
             </div>
 
-            <button
-              onClick={handleReset}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-600 hover:from-emerald-600 hover:to-teal-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-700/20"
-            >
-              Done & Return to Dashboard
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="flex-1 py-3 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+              >
+                <Printer className="w-3.5 h-3.5 text-stone-500" />
+                <span>Print Receipt</span>
+              </button>
+              <button
+                onClick={handleReset}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-600 hover:from-emerald-600 hover:to-teal-500 text-white font-bold text-xs transition-all shadow-md shadow-emerald-700/20"
+              >
+                Done
+              </button>
+            </div>
           </div>
         ) : (
           /* Transfer Form - matching Image 2 */

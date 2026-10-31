@@ -129,9 +129,28 @@ export default function CustomerAccountsPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-stone-100 text-[11px] text-stone-400 flex justify-between font-mono">
-                  <span>Branch #{acc.branch_id || 1} &bull; Delhi CP</span>
-                  <span>Currency: INR</span>
+                <div className="mt-4 pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-[11px] text-stone-400 font-mono">
+                    <span>Branch #{acc.branch_id || 1} &bull; Delhi CP</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => api.downloadAccountStatement(acc.id, 'pdf')}
+                      className="px-2.5 py-1 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 text-[11px] font-semibold hover:bg-emerald-100 transition-colors flex items-center gap-1"
+                      title="Download PDF Statement"
+                    >
+                      <span>PDF</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => api.downloadAccountStatement(acc.id, 'csv')}
+                      className="px-2.5 py-1 rounded-lg border border-stone-200 bg-stone-50 text-stone-700 text-[11px] font-semibold hover:bg-stone-100 transition-colors flex items-center gap-1"
+                      title="Download CSV Statement"
+                    >
+                      <span>CSV</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

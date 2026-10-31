@@ -1,13 +1,16 @@
 import time
 import concurrent.futures
+from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, desc
+from sqlalchemy import or_, desc, func
+from backend.app.core.config import settings
 from backend.app.core.database import get_db, SessionLocal
 from backend.app.core.auth import get_current_user, require_roles, record_audit_event
-from backend.app.models import Account, Transaction, LedgerEntry, User
+from backend.app.core.rate_limiter import check_transfer_rate_limit
+from backend.app.models import Account, Transaction, LedgerEntry, User, Beneficiary
 from backend.app.schemas.transaction import (
     TransferRequest, DepositWithdrawRequest, TransactionReceipt,
     TransactionOut, LedgerEntryOut, ConcurrencyRaceRequest, SimulateFailureRequest
@@ -20,7 +23,7 @@ router = APIRouter(prefix="/api/transfers", tags=["Financial Transfers & Concurr
 def transfer_money(
     req: TransferRequest,
     request: Request,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(check_transfer_rate_limit),
     db: Session = Depends(get_db)
 ):
     source_acc = db.query(Account).filter(Account.id == req.source_account_id).first()
@@ -53,6 +56,33 @@ def transfer_money(
 
     if dest_acc.id == source_acc.id:
         raise HTTPException(status_code=400, detail="Cannot transfer funds to the same account.")
+
+    # Validate balance before business policy checks
+    if source_acc.balance < req.amount:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Insufficient funds: available ₹{float(source_acc.balance):,.2f}, required ₹{float(req.amount):,.2f}"
+        )
+
+    # Enforce beneficiary daily limit if registered
+    if current_user.role.name == "customer" and current_user.customer_profile:
+        ben = db.query(Beneficiary).filter(
+            Beneficiary.customer_id == current_user.customer_profile.id,
+            Beneficiary.account_number == dest_acc.account_number
+        ).first()
+        if ben:
+            start_of_day = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            daily_transferred = db.query(func.coalesce(func.sum(Transaction.amount), 0)).filter(
+                Transaction.source_account_id == source_acc.id,
+                Transaction.destination_account_id == dest_acc.id,
+                Transaction.created_at >= start_of_day,
+                Transaction.status == "COMPLETED"
+            ).scalar()
+            if (daily_transferred + req.amount) > ben.daily_limit:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Beneficiary daily limit exceeded: maximum allowed is ₹{float(ben.daily_limit):,.2f}, already transferred today: ₹{float(daily_transferred):,.2f}"
+                )
 
     transfer_desc = req.description or req.remarks or "Funds transfer via web banking"
 
@@ -200,14 +230,21 @@ def simulate_transaction_failure(
     source_account_id: Optional[int] = Query(None),
     destination_account_number: Optional[str] = Query(None),
     amount: Optional[Decimal] = Query(None),
-    current_user: User = Depends(require_roles("admin", "branch_manager")),
+    current_user: User = Depends(require_roles("admin")),
     db: Session = Depends(get_db)
 ):
     """
     Demonstrates ACID Atomicity. Debits source account inside transaction,
     deliberately triggers unhandled error before destination credit,
     and executes explicit ROLLBACK.
+    Guarded to role=admin AND DEMO_FAULT_INJECTION_ENABLED.
     """
+    if not settings.DEMO_FAULT_INJECTION_ENABLED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Fault injection simulation is disabled in this environment."
+        )
+
     src_id = (req.source_account_id if req and req.source_account_id is not None else source_account_id) or 5
     tx_amount = (req.amount if req and req.amount is not None else amount) or Decimal("2500.0000")
     
@@ -340,14 +377,20 @@ def run_concurrency_race_test(
     destination_account_number: Optional[str] = Query(None),
     amount_1: Optional[Decimal] = Query(None),
     amount_2: Optional[Decimal] = Query(None),
-    current_user: User = Depends(require_roles("admin", "branch_manager", "customer")),
+    current_user: User = Depends(require_roles("admin")),
     db: Session = Depends(get_db)
 ):
     """
     Submits two genuinely simultaneous transfer requests against the same source account
     using independent database connections. Tests SELECT ... FOR UPDATE pessimistic row locks,
     lock waiting, and verifies that the balance never drops below 0.
+    Guarded to role=admin AND DEMO_FAULT_INJECTION_ENABLED.
     """
+    if not settings.DEMO_FAULT_INJECTION_ENABLED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Concurrency race testing is disabled in this environment."
+        )
     src_id = None
     if req:
         src_id = req.account_id or req.source_account_id

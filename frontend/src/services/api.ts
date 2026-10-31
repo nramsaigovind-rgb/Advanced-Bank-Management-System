@@ -74,6 +74,34 @@ class ApiClient {
     });
   }
 
+  async registerSelf(data: {
+    username: string;
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    pan_number: string;
+    date_of_birth?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    postal_code?: string;
+    branch_id?: number;
+  }) {
+    return this.request<any>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(data: { current_password?: string; old_password?: string; new_password: string }) {
+    return this.request<any>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getMe() {
     return this.request<any>('/auth/me');
   }
@@ -118,11 +146,60 @@ class ApiClient {
     return this.request<any[]>(`/accounts/beneficiaries/list${query}`);
   }
 
-  async addBeneficiary(data: { customer_id?: number; beneficiary_name: string; account_number: string; bank_name?: string; ifsc_code?: string; transfer_limit?: number; nickname?: string }) {
-    return this.request<any>('/accounts/beneficiaries', {
+  async addBeneficiary(data: {
+    customer_id?: number;
+    beneficiary_name: string;
+    account_number: string;
+    bank_name?: string;
+    ifsc_code?: string;
+    daily_limit?: number;
+    transfer_limit?: number;
+    nickname?: string;
+  }) {
+    const payload = {
+      beneficiary_name: data.beneficiary_name,
+      account_number: data.account_number,
+      bank_name: data.bank_name || 'ABMS Internal Bank',
+      ifsc_code: data.ifsc_code || 'ABMS0001001',
+      daily_limit: data.daily_limit || data.transfer_limit || 200000,
+    };
+    return this.request<any>('/customers/beneficiaries', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
+  }
+
+  async deleteBeneficiary(id: number) {
+    return this.request<any>(`/customers/beneficiaries/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async downloadAccountStatement(accountId: number, format: 'pdf' | 'csv' = 'pdf', fromDate?: string, toDate?: string) {
+    const params = new URLSearchParams();
+    params.set('format', format);
+    if (fromDate) params.set('from_date', fromDate);
+    if (toDate) params.set('to_date', toDate);
+
+    const url = `${BASE_URL}/accounts/${accountId}/statement?${params.toString()}`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('abms_token') : null;
+    const res = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to download statement (${res.status})`);
+    }
+
+    const blob = await res.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `statement_acc_${accountId}.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
   }
 
   // ==================== CUSTOMERS ====================
@@ -353,6 +430,23 @@ class ApiClient {
 
   async verifyAuditChain() {
     return this.request<any>('/admin/diagnostics/audit-verify');
+  }
+
+  // ==================== NOTIFICATIONS ====================
+  async getNotifications() {
+    return this.request<{ unread_count: number; notifications: any[] }>('/notifications');
+  }
+
+  async markNotificationRead(id: number) {
+    return this.request<any>(`/notifications/${id}/read`, {
+      method: 'PATCH',
+    });
+  }
+
+  async markAllNotificationsRead() {
+    return this.request<any>('/notifications/read-all', {
+      method: 'POST',
+    });
   }
 }
 

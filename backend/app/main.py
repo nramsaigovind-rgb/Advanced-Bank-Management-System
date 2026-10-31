@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
@@ -6,6 +7,8 @@ from fastapi.responses import JSONResponse
 from backend.app.core.config import settings
 from backend.app.core.mongo import get_mongo_db
 from backend.app.core.redis_client import cache_manager
+from backend.app.core.rate_limiter import check_rate_limit, get_client_ip
+from backend.app.services.outbox_worker import run_outbox_worker_loop
 
 # Import all routers
 from backend.app.routers.auth import router as auth_router
@@ -18,6 +21,7 @@ from backend.app.routers.loans import router as loans_router
 from backend.app.routers.fraud import router as fraud_router
 from backend.app.routers.reports import router as reports_router
 from backend.app.routers.diagnostics import router as diagnostics_router
+from backend.app.routers.notifications import router as notifications_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("abms")
@@ -35,9 +39,21 @@ async def lifespan(app: FastAPI):
     # Verify Redis
     logger.info(f"[+] Redis Cache Engine: {cache_manager.get_stats()['engine']}")
 
+    # Start outbox worker background task
+    outbox_task = asyncio.create_task(run_outbox_worker_loop(interval_seconds=2.0))
+
+    # Start APScheduler for recurring banking jobs
+    from backend.app.services.scheduler import start_scheduler
+    start_scheduler()
+
     yield
 
     logger.info("[*] Shutting down ABMS Backend.")
+    outbox_task.cancel()
+    try:
+        await outbox_task
+    except asyncio.CancelledError:
+        pass
 
 app = FastAPI(
     title="Advanced Bank Management System API",
@@ -48,22 +64,39 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Middleware for Next.js Frontend
+# Global IP Rate Limiting Middleware (100 requests / min per IP)
+@app.middleware("http")
+async def global_ip_rate_limiting_middleware(request: Request, call_next):
+    # Bypass health checks, docs, and static assets from rate limiting
+    if not request.url.path.startswith(("/docs", "/redoc", "/openapi.json", "/health", "/favicon.ico")):
+        client_ip = get_client_ip(request)
+        key = f"rate:global:{client_ip}"
+        allowed, retry_after = check_rate_limit(key, limit=100, window_seconds=60)
+        if not allowed:
+            return JSONResponse(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                content={"detail": f"Global IP rate limit exceeded: maximum 100 requests per minute. Try again in {retry_after} seconds."},
+                headers={"Retry-After": str(retry_after)}
+            )
+    response = await call_next(request)
+    return response
+
+# CORS Middleware restricted to configured frontend origins (no "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
-# Global Exception Handler
+# Global Generic 500 Exception Handler (server-side detailed logging)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Global exception: {type(exc).__name__}: {exc}")
+    logger.exception(f"Unhandled server error on {request.method} {request.url.path}: {exc}")
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": f"Internal Server Error: {str(exc)}"}
+        content={"detail": "Internal Server Error. Please contact system support."}
     )
 
 # Register Routers
@@ -77,6 +110,7 @@ app.include_router(loans_router)
 app.include_router(fraud_router)
 app.include_router(reports_router)
 app.include_router(diagnostics_router)
+app.include_router(notifications_router)
 
 @app.get("/")
 def root():

@@ -121,12 +121,18 @@ export default function CustomerTransferPage() {
     setBenError(null);
     setBenSuccess(false);
 
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (!ifscRegex.test(benIfsc.toUpperCase().trim())) {
+      setBenError('Invalid IFSC code format (e.g. ABMS0001001). Must follow ^[A-Z]{4}0[A-Z0-9]{6}$');
+      return;
+    }
+
     try {
       await api.addBeneficiary({
         beneficiary_name: benName,
         account_number: benAccNum,
         bank_name: benBank,
-        ifsc_code: benIfsc,
+        ifsc_code: benIfsc.toUpperCase().trim(),
         transfer_limit: parseFloat(benLimit) || 50000,
       });
       setBenSuccess(true);

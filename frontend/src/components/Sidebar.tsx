@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -22,16 +22,14 @@ import {
   Database,
   Activity,
   Shield,
-  TrendingUp,
-  Gift,
-  HelpCircle,
-  Briefcase,
-  Layers,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const role = user?.role?.toUpperCase() || 'CUSTOMER';
   const isAdmin = role.includes('ADMIN');
@@ -91,7 +89,30 @@ export default function Sidebar() {
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <aside className="w-64 bg-forest-900 text-stone-200 flex flex-col flex-shrink-0 border-r border-forest-800/80 shadow-2xl min-h-screen relative overflow-hidden select-none">
+    <>
+      {/* Mobile Hamburger Button */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="md:hidden fixed top-3 left-4 z-40 p-2.5 rounded-2xl bg-forest-900 text-white shadow-lg border border-forest-800"
+        title="Toggle Menu"
+      >
+        {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
+      {/* Backdrop for mobile */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-xs z-30"
+        />
+      )}
+
+      <aside
+        className={`fixed md:sticky top-0 left-0 z-30 h-screen w-64 bg-forest-900 text-stone-200 flex flex-col flex-shrink-0 border-r border-forest-800/80 shadow-2xl transition-transform duration-300 ease-in-out overflow-hidden select-none ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
       {/* Subtle organic botanical ambient texture in bottom-left corner */}
       <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-gradient-to-tr from-emerald-600/15 to-transparent rounded-full blur-2xl pointer-events-none" />
       <div className="absolute top-1/4 -right-12 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -160,6 +181,7 @@ export default function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group ${
                 isActive
                   ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border border-emerald-400/30 text-white shadow-[0_0_15px_rgba(16,185,129,0.12)]'
@@ -233,5 +255,6 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

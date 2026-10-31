@@ -6,10 +6,10 @@ services:
     container_name: abms-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-MyPassword123!}
-      MYSQL_DATABASE: bank_management
-      MYSQL_USER: bank_app
-      MYSQL_PASSWORD: ${DB_PASSWORD:-BankAppSecure2026!}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-bank_management}
+      MYSQL_USER: ${DB_USER:-bank_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -47,12 +47,12 @@ services:
     restart: on-failure
     environment:
       ENVIRONMENT: production
-      DATABASE_URL: mysql+pymysql://${DB_USER:-bank_app}:${DB_PASSWORD:-BankAppSecure2026!}@mysql:3306/bank_management?charset=utf8mb4
+      DATABASE_URL: mysql+pymysql://${DB_USER:-bank_app}:${DB_PASSWORD}@mysql:3306/${DB_NAME:-bank_management}?charset=utf8mb4
       MONGODB_URI: mongodb://mongodb:27017
       MONGODB_DB_NAME: bank_fraud_analytics
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      SECRET_KEY: ${SECRET_KEY:-bank-management-system-super-secure-jwt-signing-secret-key-32chars}
+      SECRET_KEY: ${SECRET_KEY}
     ports:
       - "8000:8000"
     depends_on:
