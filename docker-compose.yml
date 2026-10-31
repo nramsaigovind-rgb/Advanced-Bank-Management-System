@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: abms-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-MyPassword123!}
+      MYSQL_DATABASE: bank_management
+      MYSQL_USER: bank_app
+      MYSQL_PASSWORD: ${DB_PASSWORD:-BankAppSecure2026!}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/scripts/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+
+  mongodb:
+    image: mongo:7.0
+    container_name: abms-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: abms-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: abms-backend
+    restart: on-failure
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: mysql+pymysql://${DB_USER:-bank_app}:${DB_PASSWORD:-BankAppSecure2026!}@mysql:3306/bank_management?charset=utf8mb4
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DB_NAME: bank_fraud_analytics
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SECRET_KEY: ${SECRET_KEY:-bank-management-system-super-secure-jwt-signing-secret-key-32chars}
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+
+volumes:
+  mysql_data:
+  mongo_data:
+  redis_data:
+
