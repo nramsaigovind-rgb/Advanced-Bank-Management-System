@@ -147,9 +147,9 @@ export default function TopNav({ title, subtitle, actions }: TopNavProps) {
   };
 
   return (
-    <header className="h-16 bg-cream-50/80 backdrop-blur-md border-b border-stone-200/70 px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
+    <header className="min-h-16 bg-cream-50/90 backdrop-blur-md border-b border-stone-200/70 pl-16 pr-3 sm:px-8 py-2 flex items-center justify-between gap-2 sticky top-0 z-20">
       {/* Search Bar */}
-      <div className="flex-1 max-w-md">
+      <div className="hidden sm:block flex-1 max-w-md min-w-0">
         <div className="relative flex items-center">
           <Search className="w-4 h-4 text-stone-400 absolute left-3.5 pointer-events-none" />
           <input
@@ -166,7 +166,7 @@ export default function TopNav({ title, subtitle, actions }: TopNavProps) {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 ml-4">
+      <div className="flex items-center gap-1.5 sm:gap-3 ml-auto min-w-0">
         {/* DBMS System Health Indicator */}
         <div className="hidden xl:flex items-center gap-2 bg-white/90 border border-stone-200/80 px-3 py-1.5 rounded-full text-[11px] shadow-sm">
           <div className="flex items-center gap-1.5 text-forest-800 font-medium">
@@ -189,13 +189,13 @@ export default function TopNav({ title, subtitle, actions }: TopNavProps) {
         </div>
 
         {/* Custom actions slot if provided */}
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {actions && <div className="hidden sm:flex items-center gap-2">{actions}</div>}
 
         {/* Theme mode toggle */}
         <button
           type="button"
           title="Theme Toggle"
-          className="w-8 h-8 rounded-full border border-stone-200/80 bg-white/90 hover:bg-stone-50 flex items-center justify-center text-stone-600 shadow-sm transition-colors"
+          className="hidden sm:flex w-8 h-8 rounded-full border border-stone-200/80 bg-white/90 hover:bg-stone-50 items-center justify-center text-stone-600 shadow-sm transition-colors"
         >
           <Sun className="w-4 h-4" />
         </button>
