@@ -57,7 +57,15 @@ Copy-Item .env.example .env
 # Option 1: start MySQL, MongoDB, Redis, and the backend with Docker:
 docker compose up --build
 
-# Option 2: with those services already running, start the API in project root:
+# Option 2: use MySQL installed locally and start MongoDB separately:
+# Keep DB_HOST=127.0.0.1 in .env (the hostname "mysql" is Docker-only).
+# Run this once from the project root using your local MySQL root password:
+.\backend\venv\Scripts\python.exe database\scripts\setup_mysql_user.py
+.\backend\venv\Scripts\python.exe database\scripts\apply_schema.py
+# Then load demo users and records with your MySQL client:
+# mysql -u bank_app -p bank_management < database/scripts/seed_10_records.sql
+
+# Start the API in project root:
 .\backend\venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 - Swagger API Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
@@ -67,6 +75,11 @@ automatically on its first start. To load the demo personas and sample transacti
 apply [`database/scripts/seed_10_records.sql`](database/scripts/seed_10_records.sql) after
 the database is ready. The seed file is not applied automatically so existing data is not
 overwritten.
+
+For local MySQL, `setup_mysql_user.py` creates the `bank_management` database and the
+restricted `bank_app` user. Set `MYSQL_ROOT_PASSWORD` to your actual local MySQL root
+password before running it, and set `DB_PASSWORD` to the same application password used
+by the script. `DATABASE_URL` must point to `127.0.0.1`, not the Docker hostname `mysql`.
 
 ### B. Run Frontend UI (Next.js)
 ```powershell

@@ -1,6 +1,9 @@
 import os
 import sys
 import pymysql
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def init_bank_database():
     root_pwd = os.environ.get("MYSQL_ROOT_PASSWORD")

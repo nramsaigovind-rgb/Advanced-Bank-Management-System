@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from backend.app.core.config import settings
+from backend.app.core.database import engine
 from backend.app.core.mongo import get_mongo_db
 from backend.app.core.redis_client import cache_manager
 from backend.app.core.rate_limiter import check_rate_limit, get_client_ip
@@ -29,6 +31,23 @@ logger = logging.getLogger("abms")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("[*] Starting Advanced Bank Management System (ABMS) Backend...")
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        logger.info("[+] Connected to MySQL database.")
+    except Exception as exc:
+        logger.error(
+            "[-] MySQL connection failed for %s:%s/%s. "
+            "Check DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, and DATABASE_URL.",
+            settings.DB_HOST,
+            settings.DB_PORT,
+            settings.DB_NAME,
+        )
+        raise RuntimeError(
+            "MySQL is unavailable or the configured credentials are invalid. "
+            "Create the local database user and update .env before starting the API."
+        ) from exc
+
     # Verify MongoDB
     try:
         mongo = get_mongo_db()
@@ -39,7 +58,7 @@ async def lifespan(app: FastAPI):
     # Verify Redis
     logger.info(f"[+] Redis Cache Engine: {cache_manager.get_stats()['engine']}")
 
-    # Start outbox worker background task
+    # Start background workers only after the required database is verified.
     outbox_task = asyncio.create_task(run_outbox_worker_loop(interval_seconds=2.0))
 
     # Start APScheduler for recurring banking jobs
@@ -134,4 +153,3 @@ def health_check():
             "redis": cache_manager.get_stats()["status"]
         }
     }
-
