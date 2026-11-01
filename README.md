@@ -101,14 +101,65 @@ reinstall the backend dependencies after pulling the latest changes:
 
 ## 4. Pre-Seeded Demo Personas & Credentials
 
-The login screen features **1-Click Quick Demo Persona Buttons** to test any role without manual typing:
+The seed data contains 27 active test users. The login screen provides quick-fill
+buttons for the four primary personas; the remaining seeded users can be entered manually.
 
-| Role | Username | Password | Purpose / Key Features |
-| :--- | :--- | :--- | :--- |
-| **System Admin** | `admin` | `Admin@123` | **DBMS Observatory & Concurrency Lab** |
-| **Branch Manager** | `manager_br1` | `Manager@123` | **Branch KPIs, Recharts, Loan Sanctioning** |
-| **Bank Officer** | `emp_rahul` | `Employee@123` | **KYC Verification, Customer Onboarding** |
-| **Retail Customer** | `alex_turner` | `Customer@123` | **Balance, Transfers, Ledger Audit, Loans** |
+### System administrator
+
+| Username | Password | Role / access |
+| :--- | :--- | :--- |
+| `admin` | `Admin@123` | DBMS Observatory, concurrency, audit, fraud diagnostics |
+
+### Branch managers
+
+All seeded branch managers use `Manager@123`.
+
+| Username | Password |
+| :--- | :--- |
+| `manager_br1` | `Manager@123` |
+| `manager_br2` | `Manager@123` |
+| `manager_br3` | `Manager@123` |
+| `manager_br4` | `Manager@123` |
+| `manager_br5` | `Manager@123` |
+| `manager_br6` | `Manager@123` |
+| `manager_br7` | `Manager@123` |
+| `manager_br8` | `Manager@123` |
+| `manager_br9` | `Manager@123` |
+| `manager_br10` | `Manager@123` |
+
+### Bank employees
+
+All seeded bank employees use `Employee@123`.
+
+| Username | Password |
+| :--- | :--- |
+| `emp_rahul` | `Employee@123` |
+| `emp_priya` | `Employee@123` |
+| `emp_amit` | `Employee@123` |
+| `emp_sneha` | `Employee@123` |
+
+### Retail customers
+
+All seeded retail customers use `Customer@123`.
+
+| Username | Password | Demo account |
+| :--- | :--- | :--- |
+| `alex_turner` | `Customer@123` | `1000202600` |
+| `sarah_connor` | `Customer@123` | `1000202601` |
+| `vikram_singh` | `Customer@123` | `1000202602` |
+| `ananya_sharma` | `Customer@123` | `1000202603` |
+| `rohit_verma` | `Customer@123` | `1000202604` |
+| `elena_rostova` | `Customer@123` | `1000202605` |
+| `david_miller` | `Customer@123` | `1000202606` |
+| `meera_nair` | `Customer@123` | `1000202607` |
+| `arjun_kapoor` | `Customer@123` | `1000202608` |
+| `kavita_reddy` | `Customer@123` | `1000202609` |
+| `suresh_patel` | `Customer@123` | `1000202610` |
+| `pooja_deshmukh` | `Customer@123` | `1000202611` |
+
+The seed currently creates users for `admin`, `branch_manager`, `employee`, and
+`customer` roles only. Other roles in the permissions model do not have login users
+until they are explicitly added to the seed data.
 
 ---
 
