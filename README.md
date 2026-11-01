@@ -50,20 +50,21 @@ A production-grade, ACID-compliant **Bank Management System** demonstrating adva
 ```powershell
 # First-time setup: copy .env.example to .env and update the credentials.
 # The backend requires MySQL 8.0 for authentication and banking data.
-# MongoDB is required by fraud/audit features; Redis is optional because the
-# backend falls back to an in-process cache when Redis is unavailable.
+# MongoDB is required by fraud/audit features. Redis is exposed from Docker
+# on 127.0.0.1:6379 for the locally running backend.
 Copy-Item .env.example .env
 
 # Option 1: start MySQL, MongoDB, Redis, and the backend with Docker:
 docker compose up --build
 
-# Option 2: use MySQL installed locally and start MongoDB separately:
+# Option 2: use MySQL installed locally and MongoDB separately, with Redis in Docker:
 # Keep DB_HOST=127.0.0.1 in .env (the hostname "mysql" is Docker-only).
-# Run this once from the project root using your local MySQL root password:
-.\backend\venv\Scripts\python.exe database\scripts\setup_mysql_user.py
+# Set DB_USER=root and DB_PASSWORD to your local MySQL root password.
 .\backend\venv\Scripts\python.exe database\scripts\apply_schema.py
+# Start Docker Desktop, then start only Redis:
+docker compose up -d redis
 # Then load demo users and records with your MySQL client:
-# mysql -u bank_app -p bank_management < database/scripts/seed_10_records.sql
+# mysql -u root -p bank_management < database/scripts/seed_10_records.sql
 
 # Start the API in project root:
 .\backend\venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
@@ -76,10 +77,11 @@ apply [`database/scripts/seed_10_records.sql`](database/scripts/seed_10_records.
 the database is ready. The seed file is not applied automatically so existing data is not
 overwritten.
 
-For local MySQL, `setup_mysql_user.py` creates the `bank_management` database and the
-restricted `bank_app` user. Set `MYSQL_ROOT_PASSWORD` to your actual local MySQL root
-password before running it, and set `DB_PASSWORD` to the same application password used
-by the script. `DATABASE_URL` must point to `127.0.0.1`, not the Docker hostname `mysql`.
+For local MySQL using your existing `root` account, do not run `setup_mysql_user.py`.
+Set `DB_USER=root`, `DB_PASSWORD` to your actual local MySQL root password, and keep
+`DB_HOST=127.0.0.1`. The local backend connects to Docker Redis through the published
+`127.0.0.1:6379` port. If Docker Desktop is stopped, Redis falls back to the embedded
+development cache.
 
 ### B. Run Frontend UI (Next.js)
 ```powershell
