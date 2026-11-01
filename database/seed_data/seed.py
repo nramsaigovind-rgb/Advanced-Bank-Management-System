@@ -624,6 +624,47 @@ def seed_database():
                     all_payments.append(payment)
         db.flush()
 
+        # Seed a suspicious high-value transfer for fraud-dashboard demonstrations.
+        fraud_transfer_amount = Decimal("120000.0000")
+        fraud_source_acc = cust_accounts[2]  # Vikram Singh
+        fraud_destination_acc = cust_accounts[3]  # Ananya Sharma
+        fraud_source_acc.balance -= fraud_transfer_amount
+        fraud_destination_acc.balance += fraud_transfer_amount
+        fraud_tx = Transaction(
+            reference_no="TXN-FRD-2026103",
+            idempotency_key="IDEMP-FRD-VIKRAM-ANANYA-120000",
+            source_account_id=fraud_source_acc.id,
+            destination_account_id=fraud_destination_acc.id,
+            amount=fraud_transfer_amount,
+            currency="INR",
+            transaction_type="TRANSFER",
+            status="COMPLETED",
+            description="High-value transfer flagged for unusual amount and velocity",
+            created_at=datetime.utcnow() - timedelta(days=1),
+            completed_at=datetime.utcnow() - timedelta(days=1)
+        )
+        db.add(fraud_tx)
+        db.flush()
+        db.add_all([
+            LedgerEntry(
+                transaction_id=fraud_tx.id,
+                account_id=fraud_source_acc.id,
+                entry_type="DEBIT",
+                amount=fraud_transfer_amount,
+                balance_after=fraud_source_acc.balance,
+                posted_at=fraud_tx.created_at
+            ),
+            LedgerEntry(
+                transaction_id=fraud_tx.id,
+                account_id=fraud_destination_acc.id,
+                entry_type="CREDIT",
+                amount=fraud_transfer_amount,
+                balance_after=fraud_destination_acc.balance,
+                posted_at=fraud_tx.created_at
+            )
+        ])
+        db.flush()
+
         # ---------------------------------------------------------
         # 10. FRAUD ALERTS (>= 10 Rows)
         # ---------------------------------------------------------
@@ -639,6 +680,7 @@ def seed_database():
             ("ALT-2026-0098", cust_accounts[7].id, customers[7].id, 25, "LOW", "PASSWORD_CHANGE_FOLLOWED_BY_TRANSFER", "Funds transfer executed immediately following credential reset event.", "RESOLVED"),
             ("ALT-2026-0099", cust_accounts[8].id, customers[8].id, 96, "CRITICAL", "CIRCULAR_TRANSFER_RING", "Multi-account graph path traversal confirmed closed cycle funds recycling back to origin.", "UNDER_INVESTIGATION"),
             ("ALT-2026-0100", cust_accounts[9].id, customers[9].id, 40, "MEDIUM", "RAPID_CARD_LIMIT_MODIFICATION", "Daily POS limit increased to maximum threshold and immediately utilized.", "FALSE_POSITIVE"),
+            ("ALT-2026-0101", fraud_source_acc.id, customers[2].id, 97, "CRITICAL", "SUSPICIOUS_HIGH_VALUE_TRANSFER", "Transaction TXN-FRD-2026103 moved ₹1,20,000 to a new counterparty and exceeded the customer's normal transfer profile.", "UNDER_INVESTIGATION"),
         ]
 
         for code, acc_id, cust_id, score, sev, atype, desc, stat in fraud_alert_specs:

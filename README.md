@@ -178,3 +178,7 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 **Results:** **24 passed** in 37s (11 Database & Concurrency tests, 13 API route integration tests).
 
 Detailed presentation and mentorship scripts are documented in [`docs/demo_guide.md`](docs/demo_guide.md).
+
+For the complete project overview, schema map, file responsibilities,
+advanced database features, limitations, and validation status, see the
+[`docs/project_report.md`](docs/project_report.md).
