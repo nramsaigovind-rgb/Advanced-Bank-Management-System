@@ -46,16 +46,151 @@ be demonstrated without creating a live transaction.
 
 ## 3. Architecture
 
-```text
-Next.js + React + TypeScript frontend
-        |
-        | HTTP / JSON, JWT
-        v
-FastAPI application
-  |       |        |
-  |       |        +-- Redis cache, rate limiting, sessions
-  |       +----------- MongoDB fraud graph and projections
-  +------------------- MySQL 8 InnoDB source of truth
+### High-level system architecture
+
+```mermaid
+flowchart LR
+    U[Customer / Employee / Manager / Admin]
+
+    subgraph FE[Frontend - Next.js]
+        UI[React App Router<br/>TypeScript + Tailwind]
+        APIClient[API Client<br/>JWT + error handling]
+        UI --> APIClient
+    end
+
+    subgraph BE[Backend - FastAPI]
+        API[REST API Routers]
+        Auth[Authentication<br/>JWT + Argon2id]
+        Services[Business Services<br/>Transfers, Loans, Fraud]
+        Worker[Outbox Worker]
+        Scheduler[Scheduler]
+        API --> Auth
+        API --> Services
+        Scheduler --> Services
+        Worker --> Services
+    end
+
+    subgraph DATA[Persistence and infrastructure]
+        MySQL[(MySQL 8 InnoDB<br/>System of record)]
+        Mongo[(MongoDB<br/>Fraud graph and projections)]
+        Redis[(Redis<br/>Cache, rate limits, sessions)]
+    end
+
+    U --> UI
+    APIClient -->|HTTP/JSON| API
+    Auth --> MySQL
+    Services -->|SQLAlchemy transactions| MySQL
+    Services -->|Cache-aside / counters| Redis
+    Services -->|Fraud alerts and graph queries| Mongo
+    Services -->|Write financial event| Outbox[(outbox_events)]
+    Outbox --> Worker
+    Worker -->|Project committed events| Mongo
+```
+
+### Financial transaction and fraud flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant UI as Next.js UI
+    participant API as FastAPI Transfer API
+    participant Service as TransferService
+    participant DB as MySQL InnoDB
+    participant Outbox as Transactional Outbox
+    participant Worker as Outbox Worker
+    participant Graph as MongoDB Fraud Graph
+
+    Customer->>UI: Submit transfer with idempotency key
+    UI->>API: POST /api/transfers
+    API->>Service: Validate ownership and amount
+    Service->>DB: BEGIN
+    Service->>DB: SELECT source and destination FOR UPDATE
+    Service->>DB: Update both balances
+    Service->>DB: Insert transaction and 2 ledger entries
+    Service->>Outbox: Insert committed financial event
+    Service->>DB: COMMIT atomically
+    API-->>UI: Receipt and balances
+    Outbox->>Worker: Poll pending event
+    Worker->>Graph: Project account and transfer edges
+    Worker->>DB: Mark event processed
+    Service->>DB: Evaluate fraud rules
+    Service->>DB: Create FraudAlert when risk is high
+```
+
+### Relational database structure
+
+```mermaid
+erDiagram
+    ROLES ||--o{ USERS : assigns
+    ROLES ||--o{ ROLE_PERMISSIONS : grants
+    PERMISSIONS ||--o{ ROLE_PERMISSIONS : contains
+    BRANCHES ||--o{ EMPLOYEES : employs
+    BRANCHES ||--o{ CUSTOMERS : serves
+    USERS ||--o| EMPLOYEES : authenticates
+    USERS ||--o| CUSTOMERS : authenticates
+    CUSTOMERS ||--o{ ACCOUNTS : owns
+    ACCOUNTS ||--o{ CARDS : has
+    CUSTOMERS ||--o{ BENEFICIARIES : saves
+    ACCOUNTS ||--o{ TRANSACTIONS : sends
+    ACCOUNTS ||--o{ TRANSACTIONS : receives
+    TRANSACTIONS ||--|{ LEDGER_ENTRIES : posts
+    ACCOUNTS ||--o{ LEDGER_ENTRIES : records
+    CUSTOMERS ||--o{ LOANS : holds
+    LOANS ||--|{ LOAN_INSTALLMENTS : schedules
+    LOANS ||--o{ LOAN_PAYMENTS : receives
+    USERS ||--o{ AUDIT_LOGS : creates
+    ACCOUNTS ||--o{ FRAUD_ALERTS : triggers
+    CUSTOMERS ||--o{ FRAUD_ALERTS : concerns
+    USERS ||--o{ NOTIFICATIONS : receives
+
+    USERS {
+        bigint id PK
+        string username UK
+        bigint role_id FK
+    }
+    CUSTOMERS {
+        bigint id PK
+        bigint user_id FK
+        bigint branch_id FK
+        string customer_number UK
+    }
+    ACCOUNTS {
+        bigint id PK
+        string account_number UK
+        bigint customer_id FK
+        decimal balance
+        string status
+    }
+    TRANSACTIONS {
+        bigint id PK
+        string reference_no UK
+        bigint source_account_id FK
+        bigint destination_account_id FK
+        decimal amount
+        string status
+    }
+    LEDGER_ENTRIES {
+        bigint id PK
+        bigint transaction_id FK
+        bigint account_id FK
+        string entry_type
+        decimal amount
+        decimal balance_after
+    }
+    LOANS {
+        bigint id PK
+        bigint customer_id FK
+        decimal principal_amount
+        decimal outstanding_principal
+    }
+    FRAUD_ALERTS {
+        bigint id PK
+        bigint account_id FK
+        int risk_score
+        string severity
+        string status
+    }
 ```
 
 - **Frontend:** Next.js App Router, React, TypeScript, Tailwind CSS, Recharts,

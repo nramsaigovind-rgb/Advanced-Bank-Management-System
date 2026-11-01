@@ -230,7 +230,7 @@ export default function LoginPage() {
                   Username
                 </label>
                 <div className="relative flex items-center">
-                  <div className="absolute left-3 w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <div className="absolute left-3 w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center pointer-events-none">
                     <User className="w-4 h-4" />
                   </div>
                   <input
@@ -239,7 +239,7 @@ export default function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your username"
-                    className="pl-13 pr-4 py-2.5 w-full rounded-2xl border border-stone-200 bg-[#FDFEFC] text-stone-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
+                    className="pl-14 pr-4 py-2.5 w-full rounded-2xl border border-stone-200 bg-[#FDFEFC] text-stone-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
                   />
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function LoginPage() {
                   Password
                 </label>
                 <div className="relative flex items-center">
-                  <div className="absolute left-3 w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                  <div className="absolute left-3 w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center pointer-events-none">
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
@@ -258,7 +258,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="pl-13 pr-11 py-2.5 w-full rounded-2xl border border-stone-200 bg-[#FDFEFC] text-stone-900 text-sm font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
+                    className="pl-14 pr-11 py-2.5 w-full rounded-2xl border border-stone-200 bg-[#FDFEFC] text-stone-900 text-sm font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
                   />
                   <button
                     type="button"
