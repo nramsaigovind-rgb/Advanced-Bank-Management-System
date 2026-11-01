@@ -52,9 +52,7 @@ export default function CustomerDashboard() {
       }
 
       const txHistory = await api.getTransactionHistory({ limit: 10 });
-      if (txHistory && txHistory.items) {
-        setTransactions(txHistory.items);
-      }
+      setTransactions(Array.isArray(txHistory) ? txHistory : txHistory?.items || []);
 
       try {
         const loansData = await api.getLoans();

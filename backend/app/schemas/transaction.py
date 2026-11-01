@@ -62,6 +62,7 @@ class TransactionOut(BaseModel):
     description: str
     created_at: datetime
     completed_at: Optional[datetime] = None
+    ledger_entries: List[LedgerEntryOut] = Field(default_factory=list)
 
 class TransactionReceipt(BaseModel):
     reference_no: str

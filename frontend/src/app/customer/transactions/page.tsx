@@ -21,9 +21,7 @@ export default function CustomerTransactionsPage() {
           api.getTransactionHistory({ limit: 50 }),
           api.getAccounts(),
         ]);
-        if (txData && txData.items) {
-          setTransactions(txData.items);
-        }
+        setTransactions(Array.isArray(txData) ? txData : txData?.items || []);
         if (accData && accData.length > 0) {
           setAccounts(accData);
           setSelectedAccountId(accData[0].id);

@@ -61,9 +61,8 @@ export default function BranchManagerDashboard() {
 
       // Fetch high value transactions
       const txHistory = await api.getTransactionHistory({ limit: 30 });
-      if (txHistory && txHistory.items) {
-        setHighValueTxns(txHistory.items.filter((t: any) => Number(t.amount) >= 3000));
-      }
+      const transactions = Array.isArray(txHistory) ? txHistory : txHistory?.items || [];
+      setHighValueTxns(transactions.filter((t: any) => Number(t.amount) >= 3000));
     } catch (e: any) {
       console.error('Failed to load branch manager data', e);
       setErrorMsg(e.message || 'Failed to load branch reports');

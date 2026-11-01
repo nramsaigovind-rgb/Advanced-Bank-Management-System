@@ -29,9 +29,7 @@ export default function ManagerTransactionsPage() {
       setLoading(true);
       setErrorMsg(null);
       const res = await api.getTransactionHistory({ limit: 50 });
-      if (res && res.items) {
-        setTransactions(res.items);
-      }
+      setTransactions(Array.isArray(res) ? res : res?.items || []);
     } catch (e: any) {
       console.error(e);
       setErrorMsg(e.message || 'Failed to fetch transaction surveillance');

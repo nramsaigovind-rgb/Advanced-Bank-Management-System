@@ -20,7 +20,7 @@ import {
 
 export interface TransactionItem {
   id: number;
-  transaction_ref: string;
+  reference_no: string;
   transaction_type: string;
   source_account_id?: number;
   destination_account_id?: number;
@@ -33,8 +33,8 @@ export interface TransactionItem {
     account_id: number;
     entry_type: 'DEBIT' | 'CREDIT';
     amount: number;
-    running_balance: number;
-    created_at: string;
+    balance_after: number;
+    posted_at: string;
   }>;
 }
 
@@ -57,7 +57,7 @@ export default function TransactionTable({
 
   const filtered = transactions.filter((t) => {
     const matchesSearch =
-      t.transaction_ref.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.reference_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (t.description && t.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = typeFilter === 'ALL' || t.transaction_type === typeFilter;
     return matchesSearch && matchesType;
@@ -156,7 +156,7 @@ export default function TransactionTable({
                   <tr key={txn.id} className="hover:bg-emerald-50/20 transition-colors">
                     {/* Reference & Time */}
                     <td className="py-3.5 px-6">
-                      <div className="font-mono font-semibold text-forest-900">{txn.transaction_ref}</div>
+                      <div className="font-mono font-semibold text-forest-900">{txn.reference_no}</div>
                       <div className="text-[11px] text-stone-400 mt-0.5">{formatDate(txn.created_at)}</div>
                     </td>
 
@@ -229,7 +229,7 @@ export default function TransactionTable({
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-forest-900">Double-Entry Ledger Audit</h3>
-                  <p className="text-xs font-mono text-stone-500">{selectedTxn.transaction_ref}</p>
+                  <p className="text-xs font-mono text-stone-500">{selectedTxn.reference_no}</p>
                 </div>
               </div>
               <button
@@ -281,7 +281,7 @@ export default function TransactionTable({
                           <span className="font-mono font-semibold text-forest-900">Account #{entry.account_id}</span>
                         </div>
                         <div className="text-[11px] text-stone-400 mt-1 font-mono">
-                          Post-transaction: {formatCurrency(entry.running_balance)}
+                          Post-transaction: {formatCurrency(entry.balance_after)}
                         </div>
                       </div>
                       <div className="font-mono font-bold text-sm text-forest-900">
