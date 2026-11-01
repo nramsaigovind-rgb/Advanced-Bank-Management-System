@@ -3,7 +3,7 @@
  * Connects Next.js frontend to FastAPI backend.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
 
 class ApiClient {
   private getAuthHeader(): Record<string, string> {
@@ -20,10 +20,24 @@ class ApiClient {
       ...(options.headers as Record<string, string> || {}),
     };
 
-    const res = await fetch(url, {
-      ...options,
-      headers,
-    });
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        ...options,
+        headers,
+      });
+    } catch (error) {
+      throw new Error(
+        'Unable to reach the banking API. Start FastAPI on port 8000 and verify the backend is running.',
+        { cause: error }
+      );
+    }
+
+    if (res.status === 401 && typeof window !== 'undefined' && !endpoint.includes('/auth/login')) {
+      localStorage.removeItem('abms_token');
+      localStorage.removeItem('abms_user');
+      window.location.assign('/login');
+    }
 
     if (!res.ok) {
       let errMsg = `Request failed with status ${res.status}`;
