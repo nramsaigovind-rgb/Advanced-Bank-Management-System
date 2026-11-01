@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
 import {
@@ -46,6 +46,23 @@ export default function LoginPage() {
   });
   const [regLoading, setRegLoading] = useState(false);
   const [regSuccess, setRegSuccess] = useState<string | null>(null);
+  const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+
+  useEffect(() => {
+    let active = true;
+
+    fetch('http://127.0.0.1:8000/', { signal: AbortSignal.timeout(2500) })
+      .then((response) => {
+        if (active) setApiStatus(response.ok ? 'online' : 'offline');
+      })
+      .catch(() => {
+        if (active) setApiStatus('offline');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,6 +171,42 @@ export default function LoginPage() {
             >
               Open Account
             </button>
+          </div>
+
+          <div
+            className={`mb-4 rounded-2xl border px-3.5 py-3 ${
+              apiStatus === 'online'
+                ? 'border-emerald-200 bg-emerald-50/70'
+                : apiStatus === 'offline'
+                  ? 'border-amber-200 bg-amber-50/80'
+                  : 'border-stone-200 bg-stone-50'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  apiStatus === 'online'
+                    ? 'bg-emerald-500'
+                    : apiStatus === 'offline'
+                      ? 'bg-amber-500'
+                      : 'bg-stone-400 animate-pulse'
+                }`}
+              />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">
+                {apiStatus === 'online'
+                  ? 'API online'
+                  : apiStatus === 'offline'
+                    ? 'API unavailable'
+                    : 'Checking API'}
+              </span>
+            </div>
+            <p className="mt-1 text-[11px] leading-4 text-stone-600">
+              {apiStatus === 'online'
+                ? 'The server is reachable. MySQL and demo data are still required for sign-in.'
+                : apiStatus === 'offline'
+                  ? 'Start the FastAPI server on port 8000. Sign-in will not work until the API is running.'
+                  : 'Checking the local FastAPI server...'}
+            </p>
           </div>
 
           {error && (

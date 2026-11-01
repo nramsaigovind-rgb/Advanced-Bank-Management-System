@@ -48,10 +48,25 @@ A production-grade, ACID-compliant **Bank Management System** demonstrating adva
 
 ### A. Run Backend API Server (FastAPI)
 ```powershell
-# In project root:
+# First-time setup: copy .env.example to .env and update the credentials.
+# The backend requires MySQL 8.0 for authentication and banking data.
+# MongoDB is required by fraud/audit features; Redis is optional because the
+# backend falls back to an in-process cache when Redis is unavailable.
+Copy-Item .env.example .env
+
+# Option 1: start MySQL, MongoDB, Redis, and the backend with Docker:
+docker compose up --build
+
+# Option 2: with those services already running, start the API in project root:
 .\backend\venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 - Swagger API Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+The Docker MySQL container applies [`database/scripts/schema.sql`](database/scripts/schema.sql)
+automatically on its first start. To load the demo personas and sample transactions,
+apply [`database/scripts/seed_10_records.sql`](database/scripts/seed_10_records.sql) after
+the database is ready. The seed file is not applied automatically so existing data is not
+overwritten.
 
 ### B. Run Frontend UI (Next.js)
 ```powershell
@@ -59,6 +74,13 @@ cd frontend
 npm run dev
 ```
 - Web Application: [http://localhost:3000](http://localhost:3000)
+
+If the backend import fails with `ModuleNotFoundError: No module named 'reportlab'`,
+reinstall the backend dependencies after pulling the latest changes:
+
+```powershell
+.\backend\venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+```
 
 ---
 
@@ -77,7 +99,8 @@ The login screen features **1-Click Quick Demo Persona Buttons** to test any rol
 
 ## 5. Automated Verification & Test Suite
 
-Run the full integration test suite across MySQL, MongoDB, Redis, and FastAPI:
+Run the full integration test suite across MySQL, MongoDB, Redis, and FastAPI.
+It requires all three services and the schema/seed data to be available:
 
 ```powershell
 py -m venv backend\venv
