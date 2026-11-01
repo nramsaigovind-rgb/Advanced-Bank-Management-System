@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { SpendingDonutChart, BalanceTrendLine } from '@/components/AnalyticsWidgets';
+import { formatMaskedCardNumber } from '@/utils/display';
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
@@ -199,7 +200,7 @@ export default function CustomerDashboard() {
                           {card.card_type} &bull; {card.network || 'VISA'}
                         </div>
                         <div className="font-mono text-sm sm:text-base tracking-widest mt-1 font-bold">
-                          {card.card_number_masked || card.masked_card_number || '•••• •••• •••• 8821'}
+                          {formatMaskedCardNumber(card.card_number_masked || card.masked_card_number)}
                         </div>
                       </div>
                       <span
@@ -288,7 +289,7 @@ export default function CustomerDashboard() {
                         </div>
                         <div className="text-xs text-stone-500 mt-1">
                           Principal: ₹{Number(loan.principal_amount).toLocaleString('en-IN')} &bull; Rate:{' '}
-                          {loan.interest_rate}% p.a. &bull; Term: {loan.term_months} Mo
+                          {loan.annual_interest_rate}% p.a. &bull; Term: {loan.tenure_months} Mo
                         </div>
                       </div>
 

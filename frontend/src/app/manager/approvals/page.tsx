@@ -183,8 +183,8 @@ export default function ManagerApprovalsPage() {
                         ₹{Number(l.principal_amount).toLocaleString('en-IN')}
                       </td>
                       <td className="py-4 px-6 text-right font-mono text-stone-600">
-                        <div>{l.interest_rate}% p.a.</div>
-                        <div className="text-[10px] text-stone-400">{l.term_months} Months</div>
+                        <div>{l.annual_interest_rate}% p.a.</div>
+                        <div className="text-[10px] text-stone-400">{l.tenure_months} Months</div>
                       </td>
                       <td className="py-4 px-6 text-center">
                         <span

@@ -179,14 +179,14 @@ export default function CustomerLoansPage() {
               <div>
                 <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider font-mono">Annual Rate</span>
                 <div className="text-xl font-extrabold font-mono text-emerald-700 mt-1">
-                  {selectedLoan.interest_rate}% <span className="text-xs font-normal text-stone-400 font-sans">p.a.</span>
+                  {selectedLoan.annual_interest_rate}% <span className="text-xs font-normal text-stone-400 font-sans">p.a.</span>
                 </div>
               </div>
 
               <div>
                 <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider font-mono">Tenure & Model</span>
                 <div className="text-xl font-extrabold text-forest-900 mt-1">
-                  {selectedLoan.term_months} Months
+                  {selectedLoan.tenure_months} Months
                 </div>
                 <div className="text-[10px] text-emerald-700 font-semibold font-mono">Reducing Balance</div>
               </div>

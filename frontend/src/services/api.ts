@@ -339,8 +339,8 @@ class ApiClient {
     branch_id: number;
     loan_type: string;
     principal_amount: number;
-    interest_rate: number;
-    term_months: number;
+    annual_interest_rate: number;
+    tenure_months: number;
   }) {
     return this.request<any>('/loans/apply', {
       method: 'POST',
@@ -452,4 +452,3 @@ class ApiClient {
 
 export const api = new ApiClient();
 export default api;
-

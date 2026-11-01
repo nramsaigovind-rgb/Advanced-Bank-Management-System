@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
+import { formatMaskedCardNumber } from '@/utils/display';
 
 export default function CustomerAccountsPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -196,7 +197,7 @@ export default function CustomerAccountsPage() {
                 </div>
 
                 <div className="font-mono text-base sm:text-lg tracking-widest font-bold my-2 relative z-10">
-                  {card.card_number_masked || card.masked_card_number || '•••• •••• •••• 8821'}
+                  {formatMaskedCardNumber(card.card_number_masked || card.masked_card_number)}
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-forest-800/80 text-xs relative z-10">
