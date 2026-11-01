@@ -45,7 +45,7 @@ class Card(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     account_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False)
-    card_number_masked: Mapped[str] = mapped_column(String(20), nullable=False)
+    card_number_masked: Mapped[str] = mapped_column(String(32), nullable=False)
     card_number_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     card_type: Mapped[str] = mapped_column(SAEnum('DEBIT', 'CREDIT', name='card_type_enum'), nullable=False)
     expiry_month: Mapped[int] = mapped_column(nullable=False)
@@ -76,4 +76,3 @@ class Beneficiary(Base):
     )
 
     customer: Mapped["Customer"] = relationship("Customer", back_populates="beneficiaries")
-

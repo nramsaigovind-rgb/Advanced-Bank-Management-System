@@ -185,10 +185,10 @@ INSERT IGNORE INTO `customers` (`id`, `user_id`, `branch_id`, `customer_number`,
 
 -- Table: accounts
 INSERT IGNORE INTO `accounts` (`id`, `account_number`, `customer_id`, `branch_id`, `account_type`, `balance`, `currency`, `status`, `is_system_account`, `version`, `created_at`, `updated_at`) VALUES
-  (1, 'SYS-CLEARING-DEPOSIT', NULL, 1, 'CHECKING', -1545000.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
-  (2, 'SYS-CLEARING-WITHDRAWAL', NULL, 1, 'CHECKING', 1500.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
+  (1, 'SYS-CLEARING-DEPOSIT', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
+  (2, 'SYS-CLEARING-WITHDRAWAL', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (3, 'SYS-LOAN-DISBURSEMENT', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
-  (4, 'SYS-LOAN-SETTLEMENT', NULL, 1, 'CHECKING', 25522.5870, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:30'),
+  (4, 'SYS-LOAN-SETTLEMENT', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:30'),
   (5, 'SYS-INTEREST-INCOME', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (6, 'SYS-INTEREST-EXPENSE', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (7, '1000202600', 1, 1, 'SAVINGS', 5000.0000, 'INR', 'ACTIVE', 0, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
@@ -519,4 +519,3 @@ INSERT IGNORE INTO `audit_logs` (`id`, `user_id`, `actor_role`, `action`, `entit
   (10, 1, 'system', 'RECONCILIATION_RUN', 'Ledger', 'ALL_ACCOUNTS', NULL, '{"status": "BALANCED", "discrepancies": 0}', '127.0.0.1', NULL, '9fa804b85aff0761d37433799b47beab9002dcd618cc5784d3eacd4b205dcfba', 'e1df670a5fb546b9a7f67cbad5b2a5704ba031e8dadfe964c6c2ef3a8816f728', '2026-10-21 16:14:30');
 
 SET FOREIGN_KEY_CHECKS = 1;
-
