@@ -6,7 +6,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Table: roles
-INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`) VALUES
+INSERT IGNORE INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`) VALUES
   (1, 'admin', 'System Administrator', 'Full administrative and diagnostic control', '2026-10-31 16:14:29'),
   (2, 'branch_manager', 'Branch Manager', 'Branch operations, approvals, and reports', '2026-10-31 16:14:29'),
   (3, 'employee', 'Bank Employee', 'Customer servicing, KYC verification, account management', '2026-10-31 16:14:29'),
@@ -19,7 +19,7 @@ INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`) 
   (10, 'risk_analyst', 'Risk & Fraud Analyst', 'Graph analytics and fraud cycle monitoring', '2026-10-31 16:14:29');
 
 -- Table: permissions
-INSERT INTO `permissions` (`id`, `code`, `name`, `category`, `description`, `created_at`) VALUES
+INSERT IGNORE INTO `permissions` (`id`, `code`, `name`, `category`, `description`, `created_at`) VALUES
   (1, 'account:create', 'Create Bank Account', 'Account Management', 'Grants privilege to create bank account', '2026-10-31 16:14:29'),
   (2, 'account:view', 'View Bank Account Details', 'Account Management', 'Grants privilege to view bank account details', '2026-10-31 16:14:29'),
   (3, 'account:freeze', 'Freeze or Deactivate Account', 'Account Management', 'Grants privilege to freeze or deactivate account', '2026-10-31 16:14:29'),
@@ -43,7 +43,7 @@ INSERT INTO `permissions` (`id`, `code`, `name`, `category`, `description`, `cre
   (21, 'fraud:investigate', 'Investigate Fraud Alerts & View Graph', 'Fraud Detection', 'Grants privilege to investigate fraud alerts & view graph', '2026-10-31 16:14:29');
 
 -- Table: role_permissions
-INSERT INTO `role_permissions` (`role_id`, `permission_id`) VALUES
+INSERT IGNORE INTO `role_permissions` (`role_id`, `permission_id`) VALUES
   (1, 1),
   (3, 1),
   (1, 2),
@@ -109,7 +109,7 @@ INSERT INTO `role_permissions` (`role_id`, `permission_id`) VALUES
   (10, 21);
 
 -- Table: branches
-INSERT INTO `branches` (`id`, `branch_code`, `name`, `ifsc_code`, `address`, `city`, `state`, `postal_code`, `phone`, `email`, `is_active`, `created_at`) VALUES
+INSERT IGNORE INTO `branches` (`id`, `branch_code`, `name`, `ifsc_code`, `address`, `city`, `state`, `postal_code`, `phone`, `email`, `is_active`, `created_at`) VALUES
   (1, 'BR-DEL-001', 'Delhi Connaught Place', 'ABMS0001001', '12 Barakhamba Road, Connaught Place', 'New Delhi', 'Delhi', '110001', '+91 11 2345 6789', 'cp.delhi@abmsbank.com', 1, '2026-10-31 16:14:29'),
   (2, 'BR-BLR-001', 'Bengaluru Tech Corridor', 'ABMS0002001', '45 Outer Ring Road, Bellandur', 'Bengaluru', 'Karnataka', '560103', '+91 80 4123 4567', 'tech.blr@abmsbank.com', 1, '2026-10-31 16:14:29'),
   (3, 'BR-MUM-001', 'Mumbai Nariman Point', 'ABMS0003001', '88 Marine Drive, Nariman Point', 'Mumbai', 'Maharashtra', '400021', '+91 22 6678 9012', 'nariman.mum@abmsbank.com', 1, '2026-10-31 16:14:29'),
@@ -122,7 +122,7 @@ INSERT INTO `branches` (`id`, `branch_code`, `name`, `ifsc_code`, `address`, `ci
   (10, 'BR-AMD-001', 'Ahmedabad SG Highway', 'ABMS0008001', '90 SG Highway Commercial Hub', 'Ahmedabad', 'Gujarat', '380054', '+91 79 2685 1122', 'sghighway@abmsbank.com', 1, '2026-10-31 16:14:29');
 
 -- Table: employees
-INSERT INTO `employees` (`id`, `user_id`, `branch_id`, `employee_code`, `first_name`, `last_name`, `designation`, `department`, `phone`, `hire_date`, `is_active`, `created_at`) VALUES
+INSERT IGNORE INTO `employees` (`id`, `user_id`, `branch_id`, `employee_code`, `first_name`, `last_name`, `designation`, `department`, `phone`, `hire_date`, `is_active`, `created_at`) VALUES
   (1, 2, 1, 'EMP-MGR-101', 'Manager_New', 'Lead_1', 'Assistant Vice President & Branch Head', 'Branch Management', '+91 98000 10001', '2020-01-15', 1, '2026-10-31 16:14:29'),
   (2, 3, 2, 'EMP-MGR-102', 'Manager_Ben', 'Lead_2', 'Assistant Vice President & Branch Head', 'Branch Management', '+91 98000 10002', '2020-01-15', 1, '2026-10-31 16:14:29'),
   (3, 4, 3, 'EMP-MGR-103', 'Manager_Mum', 'Lead_3', 'Assistant Vice President & Branch Head', 'Branch Management', '+91 98000 10003', '2020-01-15', 1, '2026-10-31 16:14:29'),
@@ -139,7 +139,7 @@ INSERT INTO `employees` (`id`, `user_id`, `branch_id`, `employee_code`, `first_n
   (14, 15, 3, 'EMP-RET-023', 'Sneha', 'Kulkarni', 'Retail Banking Associate', 'Retail Banking', '+91 97000 20014', '2021-06-01', 1, '2026-10-31 16:14:29');
 
 -- Table: users
-INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `role_id`, `is_active`, `is_locked`, `failed_login_attempts`, `last_login`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `users` (`id`, `username`, `email`, `password_hash`, `role_id`, `is_active`, `is_locked`, `failed_login_attempts`, `last_login`, `created_at`, `updated_at`) VALUES
   (1, 'admin', 'admin@abmsbank.com', '$argon2id$v=19$m=65536,t=3,p=4$AqBUitG6lxICAACgdK6Vsg$Tv86Tc6n2qsSrhtK0URLRoaI0KL00wnDe2LOtQeWAa4', 1, 1, 0, 0, NULL, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (2, 'manager_br1', 'manager.br1@abmsbank.com', '$argon2id$v=19$m=65536,t=3,p=4$L4UQYmztnRPi3Ps/xziHMA$gYgT+eipWu8t7EkbH1ed0L6WFhL3rTtSeBEQoCEWgDw', 2, 1, 0, 0, NULL, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (3, 'manager_br2', 'manager.br2@abmsbank.com', '$argon2id$v=19$m=65536,t=3,p=4$L4UQYmztnRPi3Ps/xziHMA$gYgT+eipWu8t7EkbH1ed0L6WFhL3rTtSeBEQoCEWgDw', 2, 1, 0, 0, NULL, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
@@ -169,7 +169,7 @@ INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `role_id`, `is_
   (27, 'pooja_deshmukh', 'pooja.deshmukh@example.com', '$argon2id$v=19$m=65536,t=3,p=4$vHcuhTCmNGbsPWfMOSfEuA$IKqeao1hLGWo0Sq97uGJPOfHNtyT/q2D+uV5SMiCxpE', 4, 1, 0, 0, NULL, '2026-10-31 16:14:29', '2026-10-31 16:14:29');
 
 -- Table: customers
-INSERT INTO `customers` (`id`, `user_id`, `branch_id`, `customer_number`, `first_name`, `last_name`, `date_of_birth`, `gender`, `phone`, `email`, `address`, `city`, `state`, `postal_code`, `pan_number`, `kyc_status`, `kyc_document_type`, `kyc_document_id`, `verified_by_employee_id`, `verified_at`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `customers` (`id`, `user_id`, `branch_id`, `customer_number`, `first_name`, `last_name`, `date_of_birth`, `gender`, `phone`, `email`, `address`, `city`, `state`, `postal_code`, `pan_number`, `kyc_status`, `kyc_document_type`, `kyc_document_id`, `verified_by_employee_id`, `verified_at`, `created_at`, `updated_at`) VALUES
   (1, 16, 1, 'CUST-20260001', 'Alex', 'Turner', '1992-05-14', 'Male', '+91 99001 11001', 'alex.turner@example.com', '42 Residency Road', 'Bengaluru', 'Karnataka', '560025', 'ABCDE1234F', 'VERIFIED', 'PASSPORT', 'P1234567', 1, '2026-08-02 16:14:29', '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (2, 17, 1, 'CUST-20260002', 'Sarah', 'Connor', '1988-11-20', 'Female', '+91 99001 11002', 'sarah.connor@example.com', '77 Koramangala 4th Block', 'Bengaluru', 'Karnataka', '560034', 'BCDEF2345G', 'VERIFIED', 'DRIVING_LICENSE', 'DL9876543', 1, '2026-08-02 16:14:29', '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (3, 18, 2, 'CUST-20260003', 'Vikram', 'Singh', '1995-03-08', 'Male', '+91 99001 11003', 'vikram.singh@example.com', '12 Whitefield Main Rd', 'Bengaluru', 'Karnataka', '560066', 'CDEFG3456H', 'VERIFIED', 'AADHAAR', '987654321012', 1, '2026-08-02 16:14:29', '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
@@ -184,7 +184,7 @@ INSERT INTO `customers` (`id`, `user_id`, `branch_id`, `customer_number`, `first
   (12, 27, 7, 'CUST-20260012', 'Pooja', 'Deshmukh', '1997-06-14', 'Female', '+91 99001 11012', 'pooja.deshmukh@example.com', '12 Hinjewadi Phase 1', 'Pune', 'Maharashtra', '411057', 'LMNOP2345Q', 'VERIFIED', 'DRIVING_LICENSE', 'DL6677889', 1, '2026-08-02 16:14:29', '2026-10-31 16:14:29', '2026-10-31 16:14:29');
 
 -- Table: accounts
-INSERT INTO `accounts` (`id`, `account_number`, `customer_id`, `branch_id`, `account_type`, `balance`, `currency`, `status`, `is_system_account`, `version`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `accounts` (`id`, `account_number`, `customer_id`, `branch_id`, `account_type`, `balance`, `currency`, `status`, `is_system_account`, `version`, `created_at`, `updated_at`) VALUES
   (1, 'SYS-CLEARING-DEPOSIT', NULL, 1, 'CHECKING', -1545000.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (2, 'SYS-CLEARING-WITHDRAWAL', NULL, 1, 'CHECKING', 1500.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
   (3, 'SYS-LOAN-DISBURSEMENT', NULL, 1, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 1, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29'),
@@ -207,7 +207,7 @@ INSERT INTO `accounts` (`id`, `account_number`, `customer_id`, `branch_id`, `acc
   (20, '2000202602', 5, 4, 'CHECKING', 0.0000, 'INR', 'ACTIVE', 0, 1, '2026-10-31 16:14:29', '2026-10-31 16:14:29');
 
 -- Table: cards
-INSERT INTO `cards` (`id`, `account_id`, `card_number_masked`, `card_number_hash`, `card_type`, `expiry_month`, `expiry_year`, `daily_atm_limit`, `daily_pos_limit`, `is_blocked`, `block_reason`, `created_at`) VALUES
+INSERT IGNORE INTO `cards` (`id`, `account_id`, `card_number_masked`, `card_number_hash`, `card_type`, `expiry_month`, `expiry_year`, `daily_atm_limit`, `daily_pos_limit`, `is_blocked`, `block_reason`, `created_at`) VALUES
   (1, 7, '4532 •••• •••• 1000', '1d51421d9e539eb9a54bda08fa7ddccf48b4b09f3067e05755cb254e485a608f', 'DEBIT', 10, 2029, 50000.00, 100000.00, 0, NULL, '2026-10-31 16:14:29'),
   (2, 8, '4532 •••• •••• 1001', '15f7aaa7bf433686b079e00ddfa8e144ef397790b400831510355432ea436697', 'DEBIT', 10, 2029, 50000.00, 100000.00, 0, NULL, '2026-10-31 16:14:29'),
   (3, 9, '4532 •••• •••• 1002', '743d3a395a7d8eef9c775408a97ccb3115dff8db2cbd04b4c48712d52b270a94', 'DEBIT', 10, 2029, 50000.00, 100000.00, 0, NULL, '2026-10-31 16:14:29'),
@@ -222,7 +222,7 @@ INSERT INTO `cards` (`id`, `account_id`, `card_number_masked`, `card_number_hash
   (12, 18, '4532 •••• •••• 1011', 'bd2b9f0c1bb5c39233a9ddaa847784941087a261b141951d591a82da40362d49', 'DEBIT', 10, 2029, 50000.00, 100000.00, 0, NULL, '2026-10-31 16:14:29');
 
 -- Table: beneficiaries
-INSERT INTO `beneficiaries` (`id`, `customer_id`, `beneficiary_name`, `account_number`, `ifsc_code`, `bank_name`, `daily_limit`, `is_verified`, `created_at`) VALUES
+INSERT IGNORE INTO `beneficiaries` (`id`, `customer_id`, `beneficiary_name`, `account_number`, `ifsc_code`, `bank_name`, `daily_limit`, `is_verified`, `created_at`) VALUES
   (1, 1, 'Sarah Connor', '1000202601', 'ABMS0001001', 'ABMS Bank Downtown', 100000.00, 1, '2026-10-31 16:14:29'),
   (2, 1, 'Vikram Singh', '1000202602', 'ABMS0002001', 'ABMS Bank Tech Corridor', 50000.00, 1, '2026-10-31 16:14:29'),
   (3, 1, 'Elena Rostova', '1000202605', 'ABMS0001001', 'ABMS Bank MG Road', 100000.00, 1, '2026-10-31 16:14:29'),
@@ -237,7 +237,7 @@ INSERT INTO `beneficiaries` (`id`, `customer_id`, `beneficiary_name`, `account_n
   (12, 11, 'Pooja Deshmukh', '1000202611', 'ABMS0005001', 'ABMS Bank Hinjewadi', 100000.00, 1, '2026-10-31 16:14:29');
 
 -- Table: transactions
-INSERT INTO `transactions` (`id`, `reference_no`, `idempotency_key`, `source_account_id`, `destination_account_id`, `amount`, `currency`, `transaction_type`, `status`, `description`, `created_at`, `completed_at`) VALUES
+INSERT IGNORE INTO `transactions` (`id`, `reference_no`, `idempotency_key`, `source_account_id`, `destination_account_id`, `amount`, `currency`, `transaction_type`, `status`, `description`, `created_at`, `completed_at`) VALUES
   (1, 'TXN-DEP-2026000', 'IDEMP-DEP-1000202600', 1, 7, 5000.0000, 'INR', 'DEPOSIT', 'COMPLETED', 'Initial account deposit for Alex Turner', '2026-10-01 16:14:29', '2026-10-01 16:14:29'),
   (2, 'TXN-DEP-2026001', 'IDEMP-DEP-1000202601', 1, 8, 75000.0000, 'INR', 'DEPOSIT', 'COMPLETED', 'Initial account deposit for Sarah Connor', '2026-10-01 16:14:29', '2026-10-01 16:14:29'),
   (3, 'TXN-DEP-2026002', 'IDEMP-DEP-1000202602', 1, 9, 150000.0000, 'INR', 'DEPOSIT', 'COMPLETED', 'Initial account deposit for Vikram Singh', '2026-10-01 16:14:29', '2026-10-01 16:14:29'),
@@ -264,7 +264,7 @@ INSERT INTO `transactions` (`id`, `reference_no`, `idempotency_key`, `source_acc
   (24, 'TXN-LNPAY-010-01', 'IDEMP-LNPAY-10-1', 16, 4, 2537.9709, 'INR', 'LOAN_REPAYMENT', 'COMPLETED', 'EMI repayment installment #1 for loan LN-2026-00110', '2026-10-16 16:14:30', '2026-10-16 16:14:30');
 
 -- Table: ledger_entries
-INSERT INTO `ledger_entries` (`id`, `transaction_id`, `account_id`, `entry_type`, `amount`, `balance_after`, `posted_at`) VALUES
+INSERT IGNORE INTO `ledger_entries` (`id`, `transaction_id`, `account_id`, `entry_type`, `amount`, `balance_after`, `posted_at`) VALUES
   (1, 1, 1, 'DEBIT', 5000.0000, -5000.0000, '2026-10-01 16:14:29'),
   (2, 1, 7, 'CREDIT', 5000.0000, 5000.0000, '2026-10-01 16:14:29'),
   (3, 2, 1, 'DEBIT', 75000.0000, -80000.0000, '2026-10-01 16:14:29'),
@@ -315,7 +315,7 @@ INSERT INTO `ledger_entries` (`id`, `transaction_id`, `account_id`, `entry_type`
   (48, 24, 4, 'CREDIT', 2537.9709, 25522.5870, '2026-10-16 16:14:30');
 
 -- Table: loans
-INSERT INTO `loans` (`id`, `loan_number`, `customer_id`, `branch_id`, `disbursement_account_id`, `loan_type`, `principal_amount`, `annual_interest_rate`, `tenure_months`, `monthly_emi`, `outstanding_principal`, `outstanding_interest`, `status`, `applied_at`, `approved_at`, `disbursed_at`, `approved_by_employee_id`) VALUES
+INSERT IGNORE INTO `loans` (`id`, `loan_number`, `customer_id`, `branch_id`, `disbursement_account_id`, `loan_type`, `principal_amount`, `annual_interest_rate`, `tenure_months`, `monthly_emi`, `outstanding_principal`, `outstanding_interest`, `status`, `applied_at`, `approved_at`, `disbursed_at`, `approved_by_employee_id`) VALUES
   (1, 'LN-2026-00101', 1, 1, 7, 'PERSONAL', 50000.0000, 10.00, 24, 2307.2463, 50000.0000, 0.0000, 'DISBURSED', '2026-09-01 16:14:29', '2026-09-03 16:14:29', '2026-09-06 16:14:29', 1),
   (2, 'LN-2026-00102', 2, 1, 8, 'HOME', 80000.0000, 8.50, 24, 3636.4540, 76930.2127, 0.0000, 'DISBURSED', '2026-09-01 16:14:29', '2026-09-03 16:14:29', '2026-09-06 16:14:29', 2),
   (3, 'LN-2026-00103', 3, 2, 9, 'AUTO', 60000.0000, 9.20, 24, 2746.5936, 57713.4064, 0.0000, 'DISBURSED', '2026-09-01 16:14:29', '2026-09-03 16:14:29', '2026-09-06 16:14:29', 3),
@@ -328,7 +328,7 @@ INSERT INTO `loans` (`id`, `loan_number`, `customer_id`, `branch_id`, `disbursem
   (10, 'LN-2026-00110', 10, 6, 16, 'HOME', 55000.0000, 10.00, 24, 2537.9709, 52920.3624, 0.0000, 'DISBURSED', '2026-09-01 16:14:29', '2026-09-03 16:14:29', '2026-09-06 16:14:29', 10);
 
 -- Table: loan_installments
-INSERT INTO `loan_installments` (`id`, `loan_id`, `installment_number`, `due_date`, `principal_component`, `interest_component`, `total_amount`, `status`, `paid_at`) VALUES
+INSERT IGNORE INTO `loan_installments` (`id`, `loan_id`, `installment_number`, `due_date`, `principal_component`, `interest_component`, `total_amount`, `status`, `paid_at`) VALUES
   (1, 1, 1, '2026-09-16', 1890.5796, 416.6667, 2307.2463, 'PENDING', NULL),
   (2, 1, 2, '2026-10-16', 1906.3345, 400.9118, 2307.2463, 'PENDING', NULL),
   (3, 1, 3, '2026-11-15', 1922.2206, 385.0257, 2307.2463, 'PENDING', NULL),
@@ -451,7 +451,7 @@ INSERT INTO `loan_installments` (`id`, `loan_id`, `installment_number`, `due_dat
   (120, 10, 12, '2027-08-12', 31146.5885, 259.5549, 31406.1434, 'PENDING', NULL);
 
 -- Table: loan_payments
-INSERT INTO `loan_payments` (`id`, `loan_id`, `installment_id`, `transaction_id`, `amount_paid`, `principal_paid`, `interest_paid`, `payment_date`) VALUES
+INSERT IGNORE INTO `loan_payments` (`id`, `loan_id`, `installment_id`, `transaction_id`, `amount_paid`, `principal_paid`, `interest_paid`, `payment_date`) VALUES
   (1, 2, 13, 16, 3636.4540, 3069.7873, 566.6667, '2026-10-16 16:14:29'),
   (2, 3, 25, 17, 2746.5936, 2286.5936, 460.0000, '2026-10-16 16:14:29'),
   (3, 4, 37, 18, 3246.3229, 2633.8229, 612.5000, '2026-10-16 16:14:30'),
@@ -463,7 +463,7 @@ INSERT INTO `loan_payments` (`id`, `loan_id`, `installment_id`, `transaction_id`
   (9, 10, 109, 24, 2537.9709, 2079.6376, 458.3333, '2026-10-16 16:14:30');
 
 -- Table: fraud_alerts
-INSERT INTO `fraud_alerts` (`id`, `alert_code`, `account_id`, `customer_id`, `risk_score`, `severity`, `alert_type`, `description`, `status`, `investigated_by_employee_id`, `investigation_notes`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `fraud_alerts` (`id`, `alert_code`, `account_id`, `customer_id`, `risk_score`, `severity`, `alert_type`, `description`, `status`, `investigated_by_employee_id`, `investigation_notes`, `created_at`, `updated_at`) VALUES
   (1, 'ALT-2026-0091', 7, 1, 78, 'HIGH', 'CIRCULAR_TRANSFER_SUSPECT', 'Rapid multi-hop funds movement matching circular topology pattern.', 'UNDER_INVESTIGATION', 1, 'Automated rule flag generated by ABMS surveillance daemon.', '2026-10-31 16:14:30', '2026-10-31 16:14:30'),
   (2, 'ALT-2026-0092', 11, 5, 45, 'MEDIUM', 'SHARED_DEVICE_ACCESS', 'Account logged in from device previously associated with multiple distinct customer profiles.', 'NEW', NULL, NULL, '2026-10-31 16:14:30', '2026-10-31 16:14:30'),
   (3, 'ALT-2026-0093', 8, 2, 88, 'HIGH', 'VELOCITY_SPIKE', 'Exceeded 5 outbound transactions within a 10-minute surveillance window.', 'UNDER_INVESTIGATION', 1, 'Automated rule flag generated by ABMS surveillance daemon.', '2026-10-31 16:14:30', '2026-10-31 16:14:30'),
@@ -476,7 +476,7 @@ INSERT INTO `fraud_alerts` (`id`, `alert_code`, `account_id`, `customer_id`, `ri
   (10, 'ALT-2026-0100', 16, 10, 40, 'MEDIUM', 'RAPID_CARD_LIMIT_MODIFICATION', 'Daily POS limit increased to maximum threshold and immediately utilized.', 'FALSE_POSITIVE', 1, 'Automated rule flag generated by ABMS surveillance daemon.', '2026-10-31 16:14:30', '2026-10-31 16:14:30');
 
 -- Table: outbox_events
-INSERT INTO `outbox_events` (`id`, `event_id`, `event_type`, `aggregate_type`, `aggregate_id`, `payload`, `status`, `retry_count`, `created_at`, `processed_at`) VALUES
+INSERT IGNORE INTO `outbox_events` (`id`, `event_id`, `event_type`, `aggregate_type`, `aggregate_id`, `payload`, `status`, `retry_count`, `created_at`, `processed_at`) VALUES
   (1, 'EVT-OUTBOX-202600', 'FINANCIAL_TRANSFER_COMPLETED', 'Transaction', '1', '{"amount": 1000.0, "reference_no": "TXN-OUTBOX-1"}', 'PROCESSED', 0, '2026-10-31 16:14:30', NULL),
   (2, 'EVT-OUTBOX-202601', 'FINANCIAL_TRANSFER_COMPLETED', 'Transaction', '2', '{"amount": 2000.0, "reference_no": "TXN-OUTBOX-2"}', 'PROCESSED', 0, '2026-10-31 16:14:30', NULL),
   (3, 'EVT-OUTBOX-202602', 'FINANCIAL_TRANSFER_COMPLETED', 'Transaction', '3', '{"amount": 3000.0, "reference_no": "TXN-OUTBOX-3"}', 'PROCESSED', 0, '2026-10-31 16:14:30', NULL),
@@ -491,7 +491,7 @@ INSERT INTO `outbox_events` (`id`, `event_id`, `event_type`, `aggregate_type`, `
   (12, 'EVT-OUTBOX-202611', 'FINANCIAL_TRANSFER_COMPLETED', 'Transaction', '12', '{"amount": 12000.0, "reference_no": "TXN-OUTBOX-12"}', 'PENDING', 0, '2026-10-31 16:14:30', NULL);
 
 -- Table: notifications
-INSERT INTO `notifications` (`id`, `user_id`, `title`, `message`, `type`, `is_read`, `link`, `created_at`) VALUES
+INSERT IGNORE INTO `notifications` (`id`, `user_id`, `title`, `message`, `type`, `is_read`, `link`, `created_at`) VALUES
   (1, 16, 'Welcome to ABMS Bank', 'Your online banking portal has been provisioned with cryptographic ledger security.', 'SYSTEM', 1, NULL, '2026-10-31 08:14:30'),
   (2, 16, 'Transfer Sent', '₹1,500.00 transferred to Sarah Connor. Ref: TXN-XFR-2026101', 'TRANSFER_SENT', 1, NULL, '2026-10-31 08:14:30'),
   (3, 16, 'Cash Withdrawal', '₹1,500.00 withdrawn from ATM. Ref: TXN-WDL-2026102', 'SYSTEM', 1, NULL, '2026-10-31 08:14:30'),
@@ -506,7 +506,7 @@ INSERT INTO `notifications` (`id`, `user_id`, `title`, `message`, `type`, `is_re
   (12, 2, 'Branch Monthly Targets', 'Delhi Connaught Place achieved 104% of deposit target this month.', 'SYSTEM', 0, NULL, '2026-10-31 08:14:30');
 
 -- Table: audit_logs
-INSERT INTO `audit_logs` (`id`, `user_id`, `actor_role`, `action`, `entity_type`, `entity_id`, `old_values`, `new_values`, `ip_address`, `user_agent`, `prev_hash`, `record_hash`, `created_at`) VALUES
+INSERT IGNORE INTO `audit_logs` (`id`, `user_id`, `actor_role`, `action`, `entity_type`, `entity_id`, `old_values`, `new_values`, `ip_address`, `user_agent`, `prev_hash`, `record_hash`, `created_at`) VALUES
   (1, 1, 'system', 'SYSTEM_INIT', 'Database', 'bank_management', NULL, '{"event": "System initialized and tables created"}', '127.0.0.1', NULL, '0000000000000000000000000000000000000000000000000000000000000000', '5dad1a9206a667a4e27d8d1f709200e47a2a3b07fcd40222ca21bd8d65aa48de', '2026-10-21 16:14:30'),
   (2, 1, 'admin', 'USER_ROLE_ASSIGN', 'User', 'admin', NULL, '{"role": "admin", "action": "Assigned superadmin privileges"}', '127.0.0.1', NULL, '5dad1a9206a667a4e27d8d1f709200e47a2a3b07fcd40222ca21bd8d65aa48de', '0c1a416db3dc27a28cbc5c4c306e46ef9affba064a1d1694bb910becfdcd93b6', '2026-10-21 16:14:30'),
   (3, 2, 'employee', 'CUSTOMER_KYC_VERIFY', 'Customer', 'CUST-20260001', NULL, '{"status": "VERIFIED", "officer": "emp_rahul"}', '192.168.1.10', NULL, '0c1a416db3dc27a28cbc5c4c306e46ef9affba064a1d1694bb910becfdcd93b6', 'b688fe3d3608c3978caafcda3879a899317b77f8d665e7e8a66ca623127cd496', '2026-10-21 16:14:30'),
@@ -519,3 +519,4 @@ INSERT INTO `audit_logs` (`id`, `user_id`, `actor_role`, `action`, `entity_type`
   (10, 1, 'system', 'RECONCILIATION_RUN', 'Ledger', 'ALL_ACCOUNTS', NULL, '{"status": "BALANCED", "discrepancies": 0}', '127.0.0.1', NULL, '9fa804b85aff0761d37433799b47beab9002dcd618cc5784d3eacd4b205dcfba', 'e1df670a5fb546b9a7f67cbad5b2a5704ba031e8dadfe964c6c2ef3a8816f728', '2026-10-21 16:14:30');
 
 SET FOREIGN_KEY_CHECKS = 1;
+

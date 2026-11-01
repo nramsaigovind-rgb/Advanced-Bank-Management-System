@@ -43,7 +43,7 @@ with SessionLocal() as db, open('database/scripts/seed_10_records.sql', 'w', enc
         if rows:
             cols = list(rows[0].keys())
             col_str = ', '.join([f'`{c}`' for c in cols])
-            f.write(f'INSERT INTO `{t}` ({col_str}) VALUES\n')
+            f.write(f'INSERT IGNORE INTO `{t}` ({col_str}) VALUES\n')
             val_lines = []
             for r in rows:
                 vals = [sql_quote(r[c]) for c in cols]

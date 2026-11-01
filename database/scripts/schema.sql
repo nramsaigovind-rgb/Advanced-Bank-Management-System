@@ -143,7 +143,7 @@ DROP TABLE IF EXISTS cards;
 CREATE TABLE cards (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT NOT NULL,
-    card_number_masked VARCHAR(20) NOT NULL,
+    card_number_masked VARCHAR(32) NOT NULL,
     card_number_hash VARCHAR(64) NOT NULL UNIQUE,
     card_type ENUM('DEBIT', 'CREDIT') NOT NULL,
     expiry_month INT NOT NULL,
@@ -524,4 +524,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-
